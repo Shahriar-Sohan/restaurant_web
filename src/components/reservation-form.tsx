@@ -28,15 +28,31 @@ export function ReservationForm() {
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      const response = await fetch("/api/reservations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    setIsLoading(false)
-    setIsSubmitted(true)
-  }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to make reservation");
+      }
+
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Error making reservation:", error);
+      // You might want to set an error state here to display to the user
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -52,7 +68,7 @@ export function ReservationForm() {
             </div>
             <h2 className="text-2xl font-bold text-gray-900 mb-2">Reservation Confirmed!</h2>
             <p className="text-gray-600 mb-6">
-              Thank you {formData.name}! We've received your reservation and will send a confirmation email shortly.
+              Thank you {formData.name}! We&apos;ve received your reservation and will send a confirmation email shortly.
             </p>
             <Button
               onClick={() => router.push("/")}
@@ -279,8 +295,8 @@ export function ReservationForm() {
                   <Mail className="w-8 h-8 text-blue-600 mx-auto mb-3" />
                   <h3 className="font-semibold text-gray-900 mb-2">Confirmation Email</h3>
                   <p className="text-sm text-gray-600">
-                    You'll receive a confirmation email with all the details of your reservation.
-                  </p>
+                      You&apos;ll receive a confirmation email with all the details of your reservation.
+                    </p>
                 </div>
               </CardContent>
             </Card>

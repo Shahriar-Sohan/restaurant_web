@@ -27,78 +27,70 @@ import {
   Star,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { ThemeToggle } from "@/components/theme-toggle"
+
 
 export function AdminDashboard() {
   const router = useRouter()
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [activeTab, setActiveTab] = useState("overview")
-  const [orders, setOrders] = useState([
-    {
-      id: "ORD-001",
-      customer: "John Smith",
-      items: ["Zeus Chicken Wrap", "Greek Fries"],
-      total: 23.8,
-      status: "preparing",
-      time: "10 mins ago",
-      location: "Downtown",
-    },
-    {
-      id: "ORD-002",
-      customer: "Sarah Johnson",
-      items: ["Mediterranean Bowl", "Baklava"],
-      total: 21.8,
-      status: "ready",
-      time: "15 mins ago",
-      location: "Westside",
-    },
-    {
-      id: "ORD-003",
-      customer: "Mike Chen",
-      items: ["Lamb Souvlaki", "Mezze Platter"],
-      total: 35.8,
-      status: "delivered",
-      time: "25 mins ago",
-      location: "University",
-    },
-  ])
+  const [orders, setOrders] = useState<Order[]>([]);
+  interface Order {
+  order_id: number;
+  user_id: number;
+  total_price: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  customer: string;
+  items: string[];
+  time: string;
+  location: string;
+}
 
-  const [menuItems, setMenuItems] = useState([
-    {
-      id: 1,
-      name: "Zeus Chicken Wrap",
-      category: "Wraps",
-      price: 14.9,
-      status: "active",
-      orders: 45,
-    },
-    {
-      id: 2,
-      name: "Mediterranean Bowl",
-      category: "Bowls",
-      price: 15.9,
-      status: "active",
-      orders: 32,
-    },
-    {
-      id: 3,
-      name: "Greek Fries",
-      category: "Sides",
-      price: 8.9,
-      status: "active",
-      orders: 28,
-    },
-  ])
+interface MenuItem {
+  food_id: number;
+  category_id: number;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  rating: number;
+  prep_time: number;
+  calories: number;
+  ingredients: string[];
+  availability: boolean;
+  discount: number;
+  orders: number;
+}
+
+
   useEffect(() => {
-    fetch("/api/menu")
-      .then((res) => {
+    const fetchOrders = async () => {
+      try {
+        const res = await fetch("/api/orders");
+        if (!res.ok) throw new Error("Failed to fetch orders");
+        const data = await res.json();
+        setOrders(data);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+    fetchOrders();
+  }, []);
+
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const res = await fetch("/api/menu");
         if (!res.ok) throw new Error("Failed to fetch menu");
-        return res.json();
-      })
-      .then((data) => {
+        const data: MenuItem[] = await res.json();
         setMenuItems(data);
-       
-      })
+      } catch (error) {
+        console.error("Error fetching menu items:", error);
+      }
+    };
+    fetchMenuItems();
   }, []);
 
   useEffect(() => {
@@ -117,8 +109,8 @@ export function AdminDashboard() {
     router.push("/login")
   }
 
-  const updateOrderStatus = (orderId: string, newStatus: string) => {
-    setOrders(orders.map((order) => (order.id === orderId ? { ...order, status: newStatus } : order)))
+  const updateOrderStatus = (orderId: number, newStatus: string) => {
+    setOrders(orders.map((order) => (order.order_id === orderId ? { ...order, status: newStatus } : order)))
   }
 
   const getStatusColor = (status: string) => {
@@ -155,7 +147,6 @@ export function AdminDashboard() {
               <Badge className="bg-blue-100 text-blue-800 hover:bg-blue-100">Dashboard</Badge>
             </div>
             <div className="flex items-center gap-4">
-              <ThemeToggle />
               <Button
                 variant="outline"
                 onClick={handleLogout}
@@ -282,15 +273,15 @@ export function AdminDashboard() {
                   <div className="space-y-4">
                     {orders.slice(0, 3).map((order) => (
                       <div
-                        key={order.id}
+                        key={order.order_id}
                         className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors duration-300"
                       >
                         <div>
                           <p className="font-medium text-gray-900 dark:text-white">{order.customer}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{order.items.join(", ")}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">Order ID: {order.order_id}</p>
                         </div>
                         <div className="text-right">
-                          <p className="font-bold text-gray-900 dark:text-white">${order.total}</p>
+                          <p className="font-bold text-gray-900 dark:text-white">${order.total_price.toFixed(2)}</p>
                           <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
                         </div>
                       </div>
@@ -342,17 +333,17 @@ export function AdminDashboard() {
                 <div className="space-y-4">
                   {orders.map((order) => (
                     <div
-                      key={order.id}
+                      key={order.order_id}
                       className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 transition-colors duration-300"
                     >
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-4">
-                          <h3 className="font-semibold text-gray-900 dark:text-white">{order.id}</h3>
+                          <h3 className="font-semibold text-gray-900 dark:text-white">{order.order_id}</h3>
                           <Badge className={getStatusColor(order.status)}>{order.status}</Badge>
                         </div>
                         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                           <Clock className="w-4 h-4" />
-                          {order.time}
+                          {new Date(order.created_at).toLocaleString()}
                         </div>
                       </div>
 
@@ -374,18 +365,19 @@ export function AdminDashboard() {
                         </div>
                         <div>
                           <p className="text-sm text-gray-600 dark:text-gray-400">Total</p>
-                          <p className="font-bold text-gray-900 dark:text-white">${order.total}</p>
+                          <p className="font-bold text-gray-900 dark:text-white">${order.total_price.toFixed(2)}</p>
                         </div>
                       </div>
 
                       <div className="flex gap-2">
-                        <Select value={order.status} onValueChange={(value) => updateOrderStatus(order.id, value)}>
+                        <Select value={order.status} onValueChange={(value) => updateOrderStatus(order.order_id, value)}>
                           <SelectTrigger className="w-40">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="preparing">Preparing</SelectItem>
-                            <SelectItem value="ready">Ready</SelectItem>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="paid">Paid</SelectItem>
+                            <SelectItem value="cancelled">Cancelled</SelectItem>
                             <SelectItem value="delivered">Delivered</SelectItem>
                           </SelectContent>
                         </Select>

@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { MapPin, Phone, Clock, Mail, Send, MessageSquare, Users, Award } from "lucide-react"
+import Image from "next/image"
 
 export function ContactPage() {
   const [formData, setFormData] = useState({
@@ -71,11 +72,27 @@ export function ContactPage() {
     e.preventDefault()
     setIsSubmitting(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    setIsSubmitting(false)
-    setIsSubmitted(true)
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to send message");
+      }
+
+      setIsSubmitted(true);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      // You might want to set an error state here to display to the user
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (isSubmitted) {
@@ -90,7 +107,7 @@ export function ContactPage() {
               Message Sent!
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-6 transition-colors duration-300">
-              Thank you {formData.name}! We've received your message and will get back to you within 24 hours.
+              Thank you {formData.name}! We&apos;ve received your message and will get back to you within 24 hours.
             </p>
             <Button
               onClick={() => {
@@ -123,7 +140,7 @@ export function ContactPage() {
             Contact Us
           </h1>
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto animate-in fade-in-50 slide-in-from-top-4 duration-700 delay-200">
-            We'd love to hear from you. Get in touch with any questions, feedback, or inquiries
+            We&apos;d love to hear from you. Get in touch with any questions, feedback, or inquiries
           </p>
         </div>
       </section>
@@ -349,9 +366,11 @@ export function ContactPage() {
                 style={{ animationDelay: `${index * 200}ms` }}
               >
                 <div className="aspect-video bg-gray-200 dark:bg-gray-700 overflow-hidden transition-colors duration-300">
-                  <img
+                  <Image
                     src={location.image || "/placeholder.svg"}
                     alt={`${location.name} location`}
+                    width={400}
+                    height={300}
                     className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                   />
                 </div>

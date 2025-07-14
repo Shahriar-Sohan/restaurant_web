@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart, Users, Award } from "lucide-react"
+import Image from "next/image"
 
 export function About() {
   const features = [
@@ -28,12 +29,12 @@ export function About() {
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">Our Story</h2>
             <p className="text-lg text-gray-600 mb-6 leading-relaxed">
               Zeus Street Greek brings the authentic taste of Greece to your neighborhood. Founded with a passion for
-              sharing traditional Greek street food, we've created a modern dining experience that honors our heritage
+              sharing traditional Greek street food, we&apos;ve created a modern dining experience that honors our heritage
               while embracing contemporary flavors.
             </p>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">
               Every dish is crafted with love, using time-honored recipes and the freshest ingredients. From our
-              signature wraps to our Mediterranean bowls, we're committed to delivering an unforgettable culinary
+              signature wraps to our Mediterranean bowls, we&apos;re committed to delivering an unforgettable culinary
               journey.
             </p>
 
@@ -56,9 +57,11 @@ export function About() {
 
           <div className="relative animate-in fade-in-50 slide-in-from-right-4 duration-700 delay-300">
             <div className="aspect-square bg-gray-200 rounded-2xl overflow-hidden shadow-2xl">
-              <img
+              <Image
                 src="/placeholder.svg?height=500&width=500"
                 alt="Restaurant interior"
+                width={500}
+                height={500}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
               />
             </div>

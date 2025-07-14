@@ -25,7 +25,7 @@ export function Hero() {
       setCurrentSlide((prev) => (prev + 1) % heroImages.length)
     }, 4000)
     return () => clearInterval(interval)
-  }, [])
+  }, [heroImages.length])
 
   return (
     <section

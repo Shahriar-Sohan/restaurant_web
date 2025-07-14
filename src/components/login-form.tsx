@@ -8,14 +8,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Eye, EyeOff, Lock, User, ArrowLeft } from "lucide-react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export function LoginForm() {
   const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [formData, setFormData] = useState({
-    username: "",
+    email: "",
     password: "",
   })
   const [error, setError] = useState("")
@@ -30,17 +31,15 @@ export function LoginForm() {
     setIsLoading(true)
     setError("")
 
-    // Simulate authentication
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    // Simple authentication check (in real app, this would be server-side)
-    if (formData.username === "admin" && formData.password === "zeus2024") {
-      // Store auth state (in real app, use proper JWT/session management)
-      localStorage.setItem("isAuthenticated", "true")
-      localStorage.setItem("userRole", "admin")
+    const res = await signIn("credentials", {
+      email: formData.email,
+      password: formData.password,
+      redirect: false
+    });
+    if (res?.ok) {
       router.push("/admin")
     } else {
-      setError("Invalid username or password")
+      setError(res?.error || "Invalid email or password")
     }
 
     setIsLoading(false)
@@ -81,19 +80,19 @@ export function LoginForm() {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="username" className="text-gray-700 dark:text-gray-300 transition-colors duration-300">
-                  Username
+                <Label htmlFor="email" className="text-gray-700 dark:text-gray-300 transition-colors duration-300">
+                  Email
                 </Label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 h-5 w-5" />
                   <Input
-                    id="username"
-                    type="text"
-                    value={formData.username}
-                    onChange={(e) => handleInputChange("username", e.target.value)}
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange("email", e.target.value)}
                     required
                     className="pl-10 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md"
-                    placeholder="Enter your username"
+                    placeholder="Enter your email"
                   />
                 </div>
               </div>
@@ -138,21 +137,6 @@ export function LoginForm() {
                 )}
               </Button>
             </form>
-
-            {/* Demo Credentials */}
-            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg transition-colors duration-300">
-              <h4 className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2 transition-colors duration-300">
-                Demo Credentials:
-              </h4>
-              <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1 transition-colors duration-300">
-                <p>
-                  <strong>Username:</strong> admin
-                </p>
-                <p>
-                  <strong>Password:</strong> zeus2024
-                </p>
-              </div>
-            </div>
           </CardContent>
         </Card>
       </div>

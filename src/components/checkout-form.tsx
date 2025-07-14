@@ -13,6 +13,7 @@ import { Separator } from "@/components/ui/separator"
 import { CreditCard, MapPin, ArrowLeft, Check, Truck, Store, Minus, Plus, Trash2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useCart } from "@/lib/cart-context"
+import Image from "next/image"
 
 export function CheckoutForm() {
   const router = useRouter()
@@ -54,16 +55,53 @@ export function CheckoutForm() {
   const finalTotal = state.total + deliveryFee + tax
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 3000))
+    try {
+      const orderItems = state.items.map(item => ({
+        food_id: item.id,
+        quantity: item.quantity,
+        price_at_purchase: item.price,
+      }));
 
-    setIsLoading(false)
-    setIsSubmitted(true)
-    dispatch({ type: "CLEAR_CART" })
-  }
+      const orderData = {
+        user_id: 1, // Placeholder for now, assuming a default user or anonymous order
+        total_price: finalTotal,
+        status: "pending",
+        order_items: orderItems,
+        // Include payment and address details if your backend expects them with the order creation
+        // For simplicity, I'm assuming these might be handled separately or are optional for initial order creation
+        address_line: formData.address,
+        city: formData.city,
+        postal_code: formData.zipCode,
+        country: "USA", // Assuming a default country for now
+        payment_method: "card", // Assuming card payment for now
+        payment_status: "pending",
+      };
+
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to place order");
+      }
+
+      setIsSubmitted(true);
+      dispatch({ type: "CLEAR_CART" });
+    } catch (error) {
+      console.error("Error placing order:", error);
+      // You might want to set an error state here to display to the user
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -145,7 +183,7 @@ export function CheckoutForm() {
             <Card className="animate-in fade-in-50 slide-in-from-left-4 duration-700">
               <CardHeader>
                 <CardTitle>Order Type</CardTitle>
-                <CardDescription>Choose how you'd like to receive your order</CardDescription>
+                <CardDescription>Choose how you&apos;d like to receive your order</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 gap-4">
@@ -420,9 +458,11 @@ export function CheckoutForm() {
                   {state.items.map((item) => (
                     <div key={item.id} className="flex gap-3 p-3 border rounded-lg">
                       <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                        <img
+                        <Image
                           src={item.image || "/placeholder.svg"}
                           alt={item.name}
+                          width={48}
+                          height={48}
                           className="w-full h-full object-cover"
                         />
                       </div>

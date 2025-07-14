@@ -29,7 +29,7 @@ import {
   Check,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { ThemeToggle } from "@/components/theme-toggle"
+import Image from "next/image";
 
 export function AddItemForm() {
   const router = useRouter()
@@ -39,15 +39,50 @@ export function AddItemForm() {
   const [ingredients, setIngredients] = useState<string[]>([])
   const [newIngredient, setNewIngredient] = useState("")
 
-  const [formData, setFormData] = useState({
+  interface FormData {
+  name: string;
+  description: string;
+  categoryId: string;
+  price: number;
+  image: string;
+  prepTime: number;
+  calories: number;
+  servingSize: string;
+  isPopular: boolean;
+  isSpicy: boolean;
+  isVegetarian: boolean;
+  isVegan: boolean;
+  isGlutenFree: boolean;
+  isAvailable: boolean;
+  stockQuantity: string;
+  allergens: string[];
+  nutritionalInfo: {
+    protein: string;
+    carbs: string;
+    fat: string;
+    fiber: string;
+    sodium: string;
+  };
+  discount: number;
+  rating: number;
+}
+
+export function AddItemForm() {
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [ingredients, setIngredients] = useState<string[]>([]);
+  const [newIngredient, setNewIngredient] = useState("");
+
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     description: "",
-    category: "",
-    price: "",
-    originalPrice: "",
-    image: null as File | null,
-    prepTime: "",
-    calories: "",
+    categoryId: "",
+    price: 0,
+    image: "",
+    prepTime: 0,
+    calories: 0,
     servingSize: "",
     isPopular: false,
     isSpicy: false,
@@ -56,7 +91,7 @@ export function AddItemForm() {
     isGlutenFree: false,
     isAvailable: true,
     stockQuantity: "",
-    allergens: [] as string[],
+    allergens: [],
     nutritionalInfo: {
       protein: "",
       carbs: "",
@@ -64,50 +99,72 @@ export function AddItemForm() {
       fiber: "",
       sodium: "",
     },
-  })
+    discount: 0,
+    rating: 0,
+  });
 
-  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [categories, setCategories] = useState<{ category_id: number; category_title: string }[]>([]);
 
-  const categories = [
-    { value: "wraps", label: "Signature Wraps" },
-    { value: "bowls", label: "Bowls & Salads" },
-    { value: "sides", label: "Sides & Dips" },
-    { value: "desserts", label: "Desserts" },
-    { value: "beverages", label: "Beverages" },
-    { value: "appetizers", label: "Appetizers" },
-  ]
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch("/api/category");
+        if (!res.ok) {
+          throw new Error("Failed to fetch categories");
+        }
+        const data = await res.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+        // Optionally, set an error state to display to the user
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const allergenOptions = ["Gluten", "Dairy", "Nuts", "Soy", "Eggs", "Fish", "Shellfish", "Sesame"]
 
-  const handleInputChange = (field: string, value: any) => {
-    if (field.includes(".")) {
-      const [parent, child] = field.split(".")
-      setFormData((prev) => ({
-        ...prev,
-        [parent]: {
-          ...prev[parent as keyof typeof prev],
-          [child]: value,
-        },
-      }))
-    } else {
-      setFormData((prev) => ({ ...prev, [field]: value }))
-    }
+  const handleInputChange = (field: string, value: string | boolean | File | null) => {
+    setFormData((prev) => {
+      let updatedValue: any = value;
+      if (
+        (field === "price" || field === "calories" || field === "discount" || field === "rating" || field === "prepTime") &&
+        typeof value === "string"
+      ) {
+        updatedValue = Number(value);
+      }
+
+      if (field.includes(".")) {
+        const [parent, child] = field.split(".");
+        return {
+          ...prev,
+          [parent]: {
+            ...(prev[parent as keyof FormData] as Record<string, any>),
+            [child]: updatedValue,
+          },
+        };
+      } else {
+        return { ...prev, [field as keyof FormData]: updatedValue as any };
+      }
+    });
 
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: "" }))
+      setErrors((prev) => ({ ...prev, [field]: "" }));
     }
   }
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      setFormData((prev) => ({ ...prev, image: file }))
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e) => {
-        setImagePreview(e.target?.result as string)
-      }
-      reader.readAsDataURL(file)
+        const base64Image = e.target?.result as string;
+        setFormData((prev) => ({ ...prev, image: base64Image }));
+        setImagePreview(base64Image);
+      };
+      reader.readAsDataURL(file);
     }
   }
 
@@ -141,7 +198,7 @@ export function AddItemForm() {
 
     if (!formData.name.trim()) newErrors.name = "Item name is required"
     if (!formData.description.trim()) newErrors.description = "Description is required"
-    if (!formData.category) newErrors.category = "Category is required"
+    if (!formData.categoryId) newErrors.categoryId = "Category is required"
     if (!formData.price) {
       newErrors.price = "Price is required"
     } else if (isNaN(Number(formData.price)) || Number(formData.price) <= 0) {
@@ -168,11 +225,40 @@ export function AddItemForm() {
 
     setIsLoading(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      const response = await fetch("/api/menu", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          price: Number(formData.price),
+          categoryId: Number(formData.categoryId),
+          image: formData.image,
+          prepTime: Number(formData.prepTime),
+          calories: Number(formData.calories),
+          ingredients: ingredients,
+          availability: formData.isAvailable,
+          discount: Number(formData.discount),
+          rating: Number(formData.rating),
+          // Add other fields as needed based on your backend schema
+          description: formData.description,
+        }),
+      });
 
-    setIsLoading(false)
-    setIsSuccess(true)
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to add item");
+      }
+
+      setIsSuccess(true);
+    } catch (error: any) {
+      console.error("Error adding menu item:", error);
+      setErrors({ api: error.message || "An unexpected error occurred." });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const handlePreview = () => {
@@ -192,7 +278,7 @@ export function AddItemForm() {
               Item Added Successfully!
             </h2>
             <p className="text-gray-600 dark:text-gray-300 mb-6 transition-colors duration-300">
-              "{formData.name}" has been added to your menu and is now available for customers.
+              &quot;{formData.name}&quot; has been added to your menu and is now available for customers.
             </p>
             <div className="space-y-3">
               <Button
@@ -725,9 +811,11 @@ export function AddItemForm() {
                     className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors duration-300"
                   >
                     {imagePreview ? (
-                      <img
+                      <Image
                         src={imagePreview || "/placeholder.svg"}
                         alt="Preview"
+                        width={256}
+                        height={256}
                         className="w-full h-full object-cover rounded-lg"
                       />
                     ) : (

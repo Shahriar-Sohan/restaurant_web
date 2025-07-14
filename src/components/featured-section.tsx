@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Star, Heart, Clock, Flame, ArrowRight, Award, ChefHat, Sparkles } from "lucide-react"
+import Image from "next/image"
 
 export function FeaturedSection() {
   const [hoveredItem, setHoveredItem] = useState<number | null>(null)
@@ -105,9 +106,11 @@ export function FeaturedSection() {
                 {/* Image Container */}
                 <div className="relative overflow-hidden">
                   <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-800 dark:to-gray-700">
-                    <img
+                    <Image
                       src={item.image || "/placeholder.svg"}
                       alt={item.name}
+                      width={600}
+                      height={400}
                       className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                     />
                   </div>

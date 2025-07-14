@@ -5,6 +5,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Star, Quote, ChevronLeft, ChevronRight, Verified, Award, Crown } from "lucide-react"
 
+import Image from "next/image"
+
 export function TestimonialsCarousel() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [isAutoPlaying, setIsAutoPlaying] = useState(true)
@@ -88,7 +90,7 @@ export function TestimonialsCarousel() {
     setIsAutoPlaying(false)
   }
 
-  const currentReview = testimonials[currentTestimonial]
+  
 
   return (
     <section className="py-32 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-blue-900/20 dark:to-indigo-900/20 relative overflow-hidden transition-colors duration-500">

@@ -3,6 +3,7 @@
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Heart, Users, Award, Clock, Leaf, Globe } from "lucide-react"
+import Image from "next/image"
 
 export function AboutPage() {
   const features = [
@@ -130,7 +131,7 @@ export function AboutPage() {
               passed down through generations of Greek families.
             </p>
             <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 leading-relaxed transition-colors duration-300">
-              Today, we're proud to serve thousands of customers across multiple locations, but our commitment remains
+              Today, we&apos;re proud to serve thousands of customers across multiple locations, but our commitment remains
               unchanged: to deliver an authentic Greek experience that honors our heritage while embracing the
               communities we serve.
             </p>
@@ -144,9 +145,11 @@ export function AboutPage() {
 
           <div className="relative animate-in fade-in-50 slide-in-from-right-4 duration-700 delay-300">
             <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-2xl overflow-hidden shadow-2xl transition-colors duration-300">
-              <img
+              <Image
                 src="/placeholder.svg?height=500&width=500&text=Restaurant+Interior"
                 alt="Restaurant interior"
+                width={500}
+                height={500}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
               />
             </div>
@@ -253,9 +256,11 @@ export function AboutPage() {
               >
                 <CardContent className="p-6">
                   <div className="w-32 h-32 mx-auto mb-4 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 transition-colors duration-300">
-                    <img
+                    <Image
                       src={member.image || "/placeholder.svg"}
                       alt={member.name}
+                      width={300}
+                      height={300}
                       className="w-full h-full object-cover hover:scale-110 transition-transform duration-300"
                     />
                   </div>

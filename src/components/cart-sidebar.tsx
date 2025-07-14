@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react"
 import { useCart } from "@/lib/cart-context"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 interface CartSidebarProps {
   isOpen: boolean
@@ -59,9 +60,11 @@ export function CartSidebar({ isOpen, onClose }: CartSidebarProps) {
                       className="flex gap-4 p-4 border rounded-lg hover:shadow-md transition-all duration-300 animate-in fade-in-50 slide-in-from-right-4"
                     >
                       <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
-                        <img
+                        <Image
                           src={item.image || "/placeholder.svg"}
                           alt={item.name}
+                          width={64}
+                          height={64}
                           className="w-full h-full object-cover"
                         />
                       </div>

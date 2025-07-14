@@ -72,7 +72,14 @@ export function Menu() {
     },
   ]
 
-  const addToCart = (item: any, categoryTitle: string) => {
+  const addToCart = (item: {
+    name: string;
+    price: string;
+    image: string;
+    description: string;
+    popular?: boolean;
+    vegetarian?: boolean;
+  }, categoryTitle: string) => {
     const cartItem = {
       id: `${categoryTitle.toLowerCase().replace(/\s+/g, "-")}-${item.name.toLowerCase().replace(/\s+/g, "-")}`,
       name: item.name,
@@ -110,9 +117,11 @@ export function Menu() {
                   style={{ animationDelay: `${categoryIndex * 200 + itemIndex * 100}ms` }}
                 >
                   <div className="aspect-video bg-gray-100 overflow-hidden">
-                    <img
+                    <Image
                       src={item.image || "/placeholder.svg"}
                       alt={item.name}
+                      width={300}
+                      height={200}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                     />
                   </div>

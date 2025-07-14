@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -23,22 +24,22 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex-shrink-0">
-            <a href="/" className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
+            <Link href="/" className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
               Zeus Street
-            </a>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
               {navItems.map((item) => (
-                <a
+                <Link
                   key={item.name}
                   href={item.href}
                   className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 text-sm font-medium transition-all duration-300 hover:scale-105"
                 >
                   {item.name}
-                </a>
+                </Link>
               ))}
             </div>
           </div>
@@ -49,14 +50,14 @@ export function Navbar() {
               <CartButton />
               <Button
                 variant="ghost"
-                onClick={() => (window.location.href = "/login")}
+                onClick={() => router.push("/login")}
                 className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-300"
               >
                 Login
               </Button>
               <Button
                 variant="outline"
-                onClick={() => (window.location.href = "/signup")}
+                onClick={() => router.push("/signup")}
                 className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-300"
               >
                 Sign Up
@@ -83,14 +84,14 @@ export function Navbar() {
                 >
                   <div className="flex flex-col space-y-4 mt-8">
                     {navItems.map((item) => (
-                      <a
+                      <Link
                         key={item.name}
                         href={item.href}
                         className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2 text-lg font-medium transition-colors duration-300"
                         onClick={() => setIsOpen(false)}
                       >
                         {item.name}
-                      </a>
+                      </Link>
                     ))}
                     <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
                       <CartButton />
@@ -98,7 +99,7 @@ export function Navbar() {
                         variant="ghost"
                         onClick={() => {
                           setIsOpen(false)
-                          window.location.href = "/login"
+                          router.push("/login")
                         }}
                         className="w-full justify-start text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors duration-300 mt-2"
                       >
@@ -108,7 +109,7 @@ export function Navbar() {
                         variant="outline"
                         onClick={() => {
                           setIsOpen(false)
-                          window.location.href = "/signup"
+                          router.push("/signup")
                         }}
                         className="w-full mt-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-300"
                       >
