@@ -1,4 +1,16 @@
+
 "use client"
+
+interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  password: string;
+  confirmPassword: string;
+  agreeToTerms: boolean;
+  subscribeNewsletter: boolean;
+}
 
 import type React from "react"
 
@@ -11,22 +23,6 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Eye, EyeOff, User, Mail, Phone, ArrowLeft, Check } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-export function SignUpForm() {
-  const router = useRouter()
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  interface FormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  password: string;
-  confirmPassword: string;
-  agreeToTerms: boolean;
-  subscribeNewsletter: boolean;
-}
 
 export function SignUpForm() {
   const router = useRouter();
@@ -89,7 +85,7 @@ export function SignUpForm() {
     if (!validateForm()) return
 
     setIsLoading(true)
-    setError("") // Clear previous errors
+    setErrors({}) // Clear previous errors
 
     try {
       const response = await fetch("/api/signup", {
@@ -101,6 +97,7 @@ export function SignUpForm() {
           name: `${formData.firstName} ${formData.lastName}`,
           email: formData.email,
           password: formData.password,
+          phone: formData.phone,
         }),
       });
 
@@ -111,7 +108,7 @@ export function SignUpForm() {
 
       setIsSuccess(true);
     } catch (error: any) {
-      setError(error.message || "An unexpected error occurred.");
+      setErrors(error.message || "An unexpected error occurred.");
     } finally {
       setIsLoading(false);
     }

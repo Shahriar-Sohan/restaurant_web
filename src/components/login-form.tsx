@@ -27,22 +27,30 @@ export function LoginForm() {
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
+    e.preventDefault();
+    setIsLoading(true);
+    setError("");
 
     const res = await signIn("credentials", {
       email: formData.email,
       password: formData.password,
-      redirect: false
+      redirect: false,
+      callbackUrl: "/",
     });
-    if (res?.ok) {
-      router.push("/admin")
+
+    if (res?.ok && res.url) {
+      router.push(res.url);
     } else {
-      setError(res?.error || "Invalid email or password")
+      setError("Invalid email or password");
+    }
+    if (res?.error) {
+      setError("Invalid email or password");
+    } else if (res?.ok && res.url) {
+      router.push(res.url);
     }
 
-    setIsLoading(false)
+
+    setIsLoading(false);
   }
 
   return (
