@@ -14,36 +14,45 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const {
-      name,
+      food_name,
+      description,
+      category_id,
       price,
-      categoryId,
-      availability = true,
-      discount = 0,
       image,
+      availability ,
+      discount,
       rating,
-      prepTime,
+      prep_time,
       calories,
       ingredients,
     } = await request.json();
 
-    if (!name || price === undefined || !categoryId) {
+    if (!food_name || price === undefined || !category_id) {
       return NextResponse.json(
-        { error: "Missing required fields: name, price, categoryId" },
+        { error: "Missing required fields: food_name, price, category_id" },
+        { status: 400 }
+      );
+    }
+
+    if (!Array.isArray(ingredients)) {
+      return NextResponse.json(
+        { error: "Ingredients must be an array of strings" },
         { status: 400 }
       );
     }
 
     const newMenuItem = await prisma.menu.create({
       data: {
-        name,
-        price,
-        categoryId,
-        availability,
-        discount,
+        food_name,
+        description,
+        category_id,
         image,
-        rating,
-        prepTime,
-        calories,
+        availability,
+        discount: discount !== undefined ? parseFloat(discount) : undefined,
+        rating: rating !== undefined ? parseFloat(rating) : undefined,
+        price: parseFloat(price),
+        prep_time: prep_time !== undefined ? parseInt(prep_time) : undefined,
+        calories: calories !== undefined ? parseInt(calories) : undefined,
         ingredients,
       },
     });
@@ -57,10 +66,45 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const { food_id, ...updateData } = await request.json();
+    const {
+      food_id,
+      food_name,
+      description,
+      category_id,
+      price,
+      image,
+      availability,
+      discount,
+      rating,
+      prep_time,
+      calories,
+      ingredients,
+    } = await request.json();
 
     if (!food_id) {
       return NextResponse.json({ error: "Missing food_id" }, { status: 400 });
+    }
+
+    const updateData: any = {};
+
+    if (food_name !== undefined) updateData.food_name = food_name;
+    if (description !== undefined) updateData.description = description;
+    if (category_id !== undefined) updateData.category_id = category_id;
+    if (image !== undefined) updateData.image = image;
+    if (availability !== undefined) updateData.availability = availability;
+    if (discount !== undefined) updateData.discount = parseFloat(discount);
+    if (rating !== undefined) updateData.rating = parseFloat(rating);
+    if (price !== undefined) updateData.price = parseFloat(price);
+    if (prep_time !== undefined) updateData.prep_time = prep_time;
+    if (calories !== undefined) updateData.calories = calories;
+    if (ingredients !== undefined) {
+      if (!Array.isArray(ingredients)) {
+        return NextResponse.json(
+          { error: "Ingredients must be an array of strings" },
+          { status: 400 }
+        );
+      }
+      updateData.ingredients = ingredients;
     }
 
     const updatedMenu = await prisma.menu.update({

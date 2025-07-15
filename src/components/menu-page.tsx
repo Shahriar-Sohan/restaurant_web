@@ -17,7 +17,7 @@ interface Category {
 interface MenuItem {
   food_id: number
   category_id: number
-  name: string
+  food_name: string
   description: string
   price: number
   image: string
@@ -50,7 +50,7 @@ interface CategoryData {
 // Custom hook for cart management
 const useCart = () => {
   const [cart, setCart] = useState<CartItem[]>([])
-  
+
   const addToCart = useCallback((item: MenuItem, categoryTitle: string) => {
     setCart(prev => {
       const existing = prev.find(cartItem => cartItem.id === item.food_id)
@@ -63,7 +63,7 @@ const useCart = () => {
       } else {
         return [...prev, {
           id: item.food_id,
-          name: item.name,
+          name: item.food_name,
           price: item.price,
           image: item.image,
           description: item.description,
@@ -101,7 +101,7 @@ const useMenuData = () => {
     try {
       const response = await fetch("http://localhost:3000/api/category")
       if (!response.ok) throw new Error('Failed to fetch categories')
-      
+
       const categoryData: Category[] = await response.json()
       setCategories([
         { id: "all", name: "All Items", description: "Browse all our delicious menu items" },
@@ -120,16 +120,16 @@ const useMenuData = () => {
     if (allLoadedByCategory[categoryId] && !loadAll) return
 
     setLoadingByCategory(prev => ({ ...prev, [categoryId]: true }))
-    
+
     try {
       const limit = loadAll ? 100000 : ITEMS_PER_PAGE
       const categoryParam = categoryId !== 0 ? `categoryId=${categoryId}&` : ''
       const response = await fetch(
         `http://localhost:3000/api/menu?${categoryParam}limit=${limit}&offset=${offset}`
       )
-      
+
       if (!response.ok) throw new Error('Failed to fetch menu items')
-      
+
       const newItems: MenuItem[] = await response.json()
 
       setMenuDataByCategory(prev => {
@@ -178,7 +178,7 @@ const MenuItemCard = ({ item, categoryTitle, onAddToCart }: {
       <div className="aspect-video bg-gray-100 dark:bg-gray-700 overflow-hidden">
         <img
           src={item.image || "https://developers.elementor.com/docs/assets/img/elementor-placeholder-image.png"}
-          alt={item.name}
+          alt={item.food_name}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
         />
       </div>
@@ -186,7 +186,7 @@ const MenuItemCard = ({ item, categoryTitle, onAddToCart }: {
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start mb-2">
           <CardTitle className="text-xl group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 text-gray-900 dark:text-white line-clamp-2">
-            {item.name}
+            {item.food_name}
           </CardTitle>
           <div className="flex gap-1 flex-wrap">
             {item.popular && (
@@ -286,7 +286,7 @@ export function MenuPage() {
 
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
-  const containerRefs = useRef<Record<number, HTMLDivElement | null>>({})
+  const containerRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const didInitialFetch = useRef(false)
 
   // Initialize data
@@ -306,7 +306,7 @@ export function MenuPage() {
     const loadInitialItems = async () => {
       // Load all items for "All Items" category
       await fetchMenuItems(0, 0, true)
-      
+
       // Load initial items for each specific category
       for (const category of categories) {
         if (category.id !== "all") {
@@ -314,20 +314,21 @@ export function MenuPage() {
         }
       }
     }
-    
+
     loadInitialItems()
   }, [categories, fetchMenuItems])
 
   // Infinite scroll handler
-  const handleScroll = useCallback((categoryId: number) => {
+  const handleScroll = useCallback((categoryId: string) => {
     const container = containerRefs.current[categoryId]
-    if (!container || allLoadedByCategory[categoryId] || loadingByCategory[categoryId]) return
+    const numericId = Number(categoryId)
+    if (!container || allLoadedByCategory[numericId] || loadingByCategory[numericId]) return
 
     const threshold = 100
     const { scrollWidth, scrollLeft, clientWidth } = container
-    
+
     if (scrollWidth - scrollLeft - clientWidth < threshold) {
-      fetchMenuItems(categoryId, offsetByCategory[categoryId] || 0)
+      fetchMenuItems(numericId, offsetByCategory[numericId] || 0)
     }
   }, [allLoadedByCategory, loadingByCategory, offsetByCategory, fetchMenuItems])
 
@@ -336,7 +337,7 @@ export function MenuPage() {
     .filter(category => selectedCategory === "all" || category.id === selectedCategory)
     .map(category => {
       let items: MenuItem[] = []
-      
+
       if (category.id === "all") {
         // For "All Items", get unique items by food_id to prevent duplicates
         const allItems = Object.values(menuDataByCategory).flat()
@@ -348,12 +349,12 @@ export function MenuPage() {
       } else {
         items = menuDataByCategory[Number(category.id)] || []
       }
-      
+
       const filteredItems = items.filter(item => {
         if (!searchTerm) return true
         const searchLower = searchTerm.toLowerCase()
         return (
-          item.name?.toLowerCase().includes(searchLower) ||
+          item.food_name?.toLowerCase().includes(searchLower) ||
           item.description?.toLowerCase().includes(searchLower) ||
           item.ingredients?.some(ingredient => ingredient.toLowerCase().includes(searchLower))
         )
@@ -408,7 +409,7 @@ export function MenuPage() {
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
             Discover authentic Greek flavors crafted with the finest ingredients and traditional recipes
           </p>
-          
+
           {/* Cart indicator */}
           {getCartItemCount() > 0 && (
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 text-white">
@@ -469,20 +470,22 @@ export function MenuPage() {
                 </p>
               </div>
             ) : (
-              <div
-                ref={el => (containerRefs.current[Number(category.id)] = el)}
-                onScroll={() => handleScroll(Number(category.id))}
+             <div
+                ref={(el) => {
+                  containerRefs.current[category.id] = el
+                }}
+                onScroll={() => handleScroll(category.id)}
                 className="flex space-x-6 overflow-x-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700 py-4 snap-x snap-mandatory"
               >
-                {category.items.map(item => (
+                {category.items.map((item, index) => (
                   <MenuItemCard
-                    key={`${category.id}-menu-item-${item.food_id}`}
+                    key={index}
                     item={item}
                     categoryTitle={category.name}
                     onAddToCart={addToCart}
                   />
                 ))}
-                
+
                 {/* Loading indicator */}
                 {loadingByCategory[Number(category.id)] && (
                   <div className="snap-start min-w-[320px] max-w-[320px] flex items-center justify-center">

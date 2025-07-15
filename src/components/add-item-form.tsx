@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
+import { ThemeToggle } from "./theme-toggle"
+import { useRouter } from "next/navigation"
+import Image from "next/image";
 import {
   ArrowLeft,
   Upload,
@@ -28,24 +31,22 @@ import {
   Award,
   Check,
 } from "lucide-react"
-import { useRouter } from "next/navigation"
-import Image from "next/image";
 
-export function AddItemForm() {
-  const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
-  const [imagePreview, setImagePreview] = useState<string | null>(null)
-  const [ingredients, setIngredients] = useState<string[]>([])
-  const [newIngredient, setNewIngredient] = useState("")
+interface NutritionalInfo {
+  protein: string;
+  carbs: string;
+  fat: string;
+  fiber: string;
+  sodium: string;
+}
 
-  interface FormData {
+interface FormData {
   name: string;
   description: string;
   categoryId: string;
   price: number;
   image: string;
-  prepTime: number;
+  prepTime: string;
   calories: number;
   servingSize: string;
   isPopular: boolean;
@@ -55,17 +56,13 @@ export function AddItemForm() {
   isGlutenFree: boolean;
   isAvailable: boolean;
   stockQuantity: string;
-  allergens: string[];
-  nutritionalInfo: {
-    protein: string;
-    carbs: string;
-    fat: string;
-    fiber: string;
-    sodium: string;
-  };
+  allergens: string[]; // you can use a stricter type if you have known allergens
+  nutritionalInfo: NutritionalInfo;
   discount: number;
   rating: number;
 }
+
+
 
 export function AddItemForm() {
   const router = useRouter();
@@ -81,7 +78,7 @@ export function AddItemForm() {
     categoryId: "",
     price: 0,
     image: "",
-    prepTime: 0,
+    prepTime: "0",
     calories: 0,
     servingSize: "",
     isPopular: false,
@@ -123,30 +120,22 @@ export function AddItemForm() {
     fetchCategories();
   }, []);
 
+  const getCategoryIdByTitle = (title: string): number | null => {
+    const category = categories.find((cat) => cat.category_title === title);
+    return category ? category.category_id : null;
+  };
+
   const allergenOptions = ["Gluten", "Dairy", "Nuts", "Soy", "Eggs", "Fish", "Shellfish", "Sesame"]
 
-  const handleInputChange = (field: string, value: string | boolean | File | null) => {
-    setFormData((prev) => {
-      let updatedValue: any = value;
-      if (
-        (field === "price" || field === "calories" || field === "discount" || field === "rating" || field === "prepTime") &&
-        typeof value === "string"
-      ) {
-        updatedValue = Number(value);
-      }
+  const discountedPrice =
+    formData.price && formData.discount >= 0 && formData.discount <= 100
+      ? (formData.price * (1 - formData.discount / 100)).toFixed(2)
+      : formData.price || 0;
 
-      if (field.includes(".")) {
-        const [parent, child] = field.split(".");
-        return {
-          ...prev,
-          [parent]: {
-            ...(prev[parent as keyof FormData] as Record<string, any>),
-            [child]: updatedValue,
-          },
-        };
-      } else {
-        return { ...prev, [field as keyof FormData]: updatedValue as any };
-      }
+  const handleInputChange = (field: string, value: any) => {
+
+    setFormData((prev) => {
+      return { ...prev, [field as keyof FormData]: value as any };
     });
 
     // Clear error when user starts typing
@@ -193,25 +182,19 @@ export function AddItemForm() {
     }
   }
 
+
   const validateForm = () => {
     const newErrors: Record<string, string> = {}
 
     if (!formData.name.trim()) newErrors.name = "Item name is required"
     if (!formData.description.trim()) newErrors.description = "Description is required"
-    if (!formData.categoryId) newErrors.categoryId = "Category is required"
+    if (!formData.categoryId || isNaN(Number(formData.categoryId)) || Number(formData.categoryId) <= 0) {
+      console.log( "Category is required");
+    }
     if (!formData.price) {
       newErrors.price = "Price is required"
     } else if (isNaN(Number(formData.price)) || Number(formData.price) <= 0) {
       newErrors.price = "Please enter a valid price"
-    }
-    if (!formData.prepTime.trim()) newErrors.prepTime = "Preparation time is required"
-    if (!formData.calories) {
-      newErrors.calories = "Calories information is required"
-    } else if (isNaN(Number(formData.calories)) || Number(formData.calories) < 0) {
-      newErrors.calories = "Please enter valid calories"
-    }
-    if (ingredients.length === 0) {
-      newErrors.ingredients = "At least one ingredient is required"
     }
 
     setErrors(newErrors)
@@ -220,44 +203,88 @@ export function AddItemForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-
-    if (!validateForm()) return
+    console.log(" submit runnin")
+    if (!validateForm()) return console.log("form is not valid")
 
     setIsLoading(true)
 
+   
+
     try {
+      // Map form data to match the database schema
+      const menuData = {
+        food_name: formData.name,
+        description: formData.description,
+        category_id: Number(formData.categoryId),
+        price: Number(formData.price),
+        image: formData.image,
+        availability: formData.isAvailable,
+        discount: Number(formData.discount),
+        rating: Number(formData.rating),
+        prep_time: Number(formData.prepTime),
+        calories: Number(formData.calories),
+        ingredients: ingredients,
+      };
+      console.log(" submit runnin")
       const response = await fetch("/api/menu", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          name: formData.name,
-          price: Number(formData.price),
-          categoryId: Number(formData.categoryId),
-          image: formData.image,
-          prepTime: Number(formData.prepTime),
-          calories: Number(formData.calories),
-          ingredients: ingredients,
-          availability: formData.isAvailable,
-          discount: Number(formData.discount),
-          rating: Number(formData.rating),
-          // Add other fields as needed based on your backend schema
-          description: formData.description,
-        }),
+        body: JSON.stringify(menuData),
       });
-
+      console.log(" submit runnin")
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || "Failed to add item");
       }
+      console.log(" submit runnin")
+      const result = await response.json();
+      console.log("Menu item created successfully:", result);
 
       setIsSuccess(true);
+
+      // Reset form after successful submission
+      setTimeout(() => {
+        setFormData({
+          name: "",
+          description: "",
+          categoryId: "",
+          price: 0,
+          image: "",
+          prepTime: "0",
+          calories: 0,
+          servingSize: "",
+          isPopular: false,
+          isSpicy: false,
+          isVegetarian: false,
+          isVegan: false,
+          isGlutenFree: false,
+          isAvailable: true,
+          stockQuantity: "",
+          allergens: [],
+          nutritionalInfo: {
+            protein: "",
+            carbs: "",
+            fat: "",
+            fiber: "",
+            sodium: "",
+          },
+          discount: 0,
+          rating: 0,
+        });
+        setIngredients([]);
+        setImagePreview(null);
+        setIsSuccess(false);
+      }, 2000);
+      console.log(" submit runnin")
     } catch (error: any) {
       console.error("Error adding menu item:", error);
       setErrors({ api: error.message || "An unexpected error occurred." });
+      console.log(" submit runnin")
     } finally {
       setIsLoading(false);
+      console.log(" submit runnin")
     }
   }
 
@@ -291,32 +318,6 @@ export function AddItemForm() {
                 variant="outline"
                 onClick={() => {
                   setIsSuccess(false)
-                  setFormData({
-                    name: "",
-                    description: "",
-                    category: "",
-                    price: "",
-                    originalPrice: "",
-                    image: null,
-                    prepTime: "",
-                    calories: "",
-                    servingSize: "",
-                    isPopular: false,
-                    isSpicy: false,
-                    isVegetarian: false,
-                    isVegan: false,
-                    isGlutenFree: false,
-                    isAvailable: true,
-                    stockQuantity: "",
-                    allergens: [],
-                    nutritionalInfo: {
-                      protein: "",
-                      carbs: "",
-                      fat: "",
-                      fiber: "",
-                      sodium: "",
-                    },
-                  })
                   setIngredients([])
                   setImagePreview(null)
                 }}
@@ -388,9 +389,8 @@ export function AddItemForm() {
                     id="name"
                     value={formData.name}
                     onChange={(e) => handleInputChange("name", e.target.value)}
-                    className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md ${
-                      errors.name ? "border-red-500 dark:border-red-400" : ""
-                    }`}
+                    className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md ${errors.name ? "border-red-500 dark:border-red-400" : ""
+                      }`}
                     placeholder="e.g., Zeus Chicken Wrap"
                   />
                   {errors.name && <p className="text-red-500 dark:text-red-400 text-sm">{errors.name}</p>}
@@ -400,18 +400,17 @@ export function AddItemForm() {
                   <Label htmlFor="category" className="text-gray-700 dark:text-gray-300">
                     Category *
                   </Label>
-                  <Select value={formData.category} onValueChange={(value) => handleInputChange("category", value)}>
+                  <Select value={formData.categoryId} onValueChange={(value) => handleInputChange("categoryId", value)}>
                     <SelectTrigger
-                      className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md ${
-                        errors.category ? "border-red-500 dark:border-red-400" : ""
-                      }`}
+                      className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md ${errors.category ? "border-red-500 dark:border-red-400" : ""
+                        }`}
                     >
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent className="bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600">
-                      {categories.map((category) => (
-                        <SelectItem key={category.value} value={category.value}>
-                          {category.label}
+                      {categories.map((category, index) => (
+                        <SelectItem key={index} value={String(category.category_id)}>
+                          {category.category_title}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -428,9 +427,8 @@ export function AddItemForm() {
                   id="description"
                   value={formData.description}
                   onChange={(e) => handleInputChange("description", e.target.value)}
-                  className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md min-h-[100px] ${
-                    errors.description ? "border-red-500 dark:border-red-400" : ""
-                  }`}
+                  className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md min-h-[100px] ${errors.description ? "border-red-500 dark:border-red-400" : ""
+                    }`}
                   placeholder="Describe your menu item in detail..."
                 />
                 {errors.description && <p className="text-red-500 dark:text-red-400 text-sm">{errors.description}</p>}
@@ -448,52 +446,65 @@ export function AddItemForm() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Price */}
                 <div className="space-y-2">
                   <Label htmlFor="price" className="text-gray-700 dark:text-gray-300">
                     Price *
                   </Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    value={formData.price}
-                    onChange={(e) => handleInputChange("price", e.target.value)}
-                    className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md ${
-                      errors.price ? "border-red-500 dark:border-red-400" : ""
-                    }`}
-                    placeholder="0.00"
-                  />
-                  {errors.price && <p className="text-red-500 dark:text-red-400 text-sm">{errors.price}</p>}
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                      $
+                    </span>
+                    <Input
+                      id="price"
+                      type="number"
+                      inputMode="decimal"
+                      value={formData.price === 0 ? "" : formData.price}
+                      onChange={(e) => handleInputChange("price", e.target.value)}
+                      className={`pl-8 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md ${errors.price ? "border-red-500 dark:border-red-400" : ""
+                        }`}
+                      placeholder="0.00"
+                    />
+                  </div>
+                  {errors.price && (
+                    <p className="text-red-500 dark:text-red-400 text-sm">
+                      {errors.price}
+                    </p>
+                  )}
                 </div>
 
+                {/* Discount */}
                 <div className="space-y-2">
                   <Label htmlFor="originalPrice" className="text-gray-700 dark:text-gray-300">
-                    Original Price (Optional)
+                    Discount (Optional)
                   </Label>
-                  <Input
-                    id="originalPrice"
-                    type="number"
-                    step="0.01"
-                    value={formData.originalPrice}
-                    onChange={(e) => handleInputChange("originalPrice", e.target.value)}
-                    className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md"
-                    placeholder="0.00"
-                  />
-                  <p className="text-xs text-gray-500 dark:text-gray-400">For showing discounts</p>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400">
+                      %
+                    </span>
+                    <Input
+                      id="originalPrice"
+                      type="number"
+                      inputMode="decimal"
+                      value={formData.discount === 0 ? "" : formData.discount}
+                      onChange={(e) => handleInputChange("discount", e.target.value)}
+                      className="pl-8 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md"
+                      placeholder="0"
+                    />
+                  </div>
                 </div>
 
+                {/* Stock Quantity */}
                 <div className="space-y-2">
                   <Label htmlFor="stockQuantity" className="text-gray-700 dark:text-gray-300">
-                    Stock Quantity
+                    After Discount Price
                   </Label>
-                  <Input
-                    id="stockQuantity"
-                    type="number"
-                    value={formData.stockQuantity}
-                    onChange={(e) => handleInputChange("stockQuantity", e.target.value)}
-                    className="bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md"
-                    placeholder="Leave empty for unlimited"
-                  />
+                  <div className="p-1.5 pl-4 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-md font-semibold text-green-600 dark:text-green-400">
+                    ${discountedPrice}
+                  </div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    This is the final price after discount.
+                  </p>
                 </div>
               </div>
 
@@ -507,6 +518,17 @@ export function AddItemForm() {
                   Available for ordering
                 </Label>
               </div>
+
+              <div className="flex gap-4 pt-4">
+                <Button onClick={handleSubmit} className="flex-1">
+                  Add Item
+                </Button>
+                <Button variant="outline" className="flex-1">
+                  Cancel
+                </Button>
+              </div>
+
+
             </CardContent>
           </Card>
 
@@ -528,9 +550,8 @@ export function AddItemForm() {
                     id="prepTime"
                     value={formData.prepTime}
                     onChange={(e) => handleInputChange("prepTime", e.target.value)}
-                    className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md ${
-                      errors.prepTime ? "border-red-500 dark:border-red-400" : ""
-                    }`}
+                    className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md ${errors.prepTime ? "border-red-500 dark:border-red-400" : ""
+                      }`}
                     placeholder="e.g., 8-10 min"
                   />
                   {errors.prepTime && <p className="text-red-500 dark:text-red-400 text-sm">{errors.prepTime}</p>}
@@ -545,9 +566,8 @@ export function AddItemForm() {
                     type="number"
                     value={formData.calories}
                     onChange={(e) => handleInputChange("calories", e.target.value)}
-                    className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md ${
-                      errors.calories ? "border-red-500 dark:border-red-400" : ""
-                    }`}
+                    className={`bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white transition-all duration-300 focus:scale-105 focus:shadow-md ${errors.calories ? "border-red-500 dark:border-red-400" : ""
+                      }`}
                     placeholder="e.g., 520"
                   />
                   {errors.calories && <p className="text-red-500 dark:text-red-400 text-sm">{errors.calories}</p>}
@@ -837,6 +857,13 @@ export function AddItemForm() {
                   </label>
                 </div>
               </div>
+              {/* Debug info */}
+              <div className="mt-8 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                <h3 className="font-semibold mb-2">Form Data (Debug):</h3>
+                <pre className="text-sm text-gray-600 dark:text-gray-300">
+                  {JSON.stringify(formData, null, 2)}
+                </pre>
+              </div>
             </CardContent>
           </Card>
 
@@ -853,6 +880,7 @@ export function AddItemForm() {
             <Button
               type="submit"
               disabled={isLoading}
+              onClick={handleSubmit}
               className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-semibold px-8 transition-all duration-300 hover:scale-105 hover:shadow-lg disabled:hover:scale-100"
             >
               {isLoading ? (

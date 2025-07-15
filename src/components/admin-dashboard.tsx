@@ -49,8 +49,8 @@ export function AdminDashboard() {
 
 interface MenuItem {
   food_id: number;
+  food_name: string;
   category_id: number;
-  name: string;
   description: string;
   price: number;
   image: string;
@@ -64,19 +64,19 @@ interface MenuItem {
 }
 
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await fetch("/api/orders");
-        if (!res.ok) throw new Error("Failed to fetch orders");
-        const data = await res.json();
-        setOrders(data);
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-      }
-    };
-    fetchOrders();
-  }, []);
+  // useEffect(() => {
+  //   const fetchOrders = async () => {
+  //     try {
+  //       const res = await fetch("/api/orders");
+  //       if (!res.ok) throw new Error("Failed to fetch orders");
+  //       const data = await res.json();
+  //       setOrders(data);
+  //     } catch (error) {
+  //       console.error("Error fetching orders:", error);
+  //     }
+  //   };
+  //   fetchOrders();
+  // }, []);
 
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   useEffect(() => {
@@ -301,12 +301,12 @@ interface MenuItem {
                   <div className="space-y-4">
                     {menuItems.map((item) => (
                       <div
-                        key={item.id}
+                        key={item.food_id}
                         className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg transition-colors duration-300"
                       >
                         <div>
-                          <p className="font-medium text-gray-900 dark:text-white">{item.name}</p>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{item.category}</p>
+                          <p className="font-medium text-gray-900 dark:text-white">{item.food_name}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">{item.category_id}</p>
                         </div>
                         <div className="text-right">
                           <p className="font-bold text-gray-900 dark:text-white">{item.orders} orders</p>
@@ -415,25 +415,25 @@ interface MenuItem {
                 <div className="space-y-4">
                   {menuItems.map((item) => (
                     <div
-                      key={item.id}
+                      key={item.food_id}
                       className="border border-gray-200 dark:border-gray-600 rounded-lg p-4 transition-colors duration-300"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                           <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg"></div>
                           <div>
-                            <h3 className="font-semibold text-gray-900 dark:text-white">{item.name}</h3>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{item.category}</p>
+                            <h3 className="font-semibold text-gray-900 dark:text-white">{item.food_name}</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">{item.category_id}</p>
                             <p className="font-bold text-gray-900 dark:text-white">${item.price}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
                           <Badge
                             className={
-                              item.status === "active" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                              item.availability ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
                             }
                           >
-                            {item.status}
+                            {item.availability ? "Available" : "out of stock" }
                           </Badge>
                           <Button variant="outline" size="sm">
                             <Edit className="w-4 h-4" />

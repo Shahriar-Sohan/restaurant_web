@@ -31,8 +31,9 @@ CREATE TABLE category (
 ------------------------------------------------------------
 CREATE TABLE menu (
     food_id SERIAL PRIMARY KEY,
-    category_id INT NOT NULL REFERENCES category(category_id) ON DELETE SET NULL,
-    img VARCHAR(255),
+    category_id INT REFERENCES category(category_id) ON DELETE SET NULL,
+    food_name VARCHAR(255) NOT NULL,
+    description TEXT,
     price DECIMAL(10, 2) NOT NULL,
     availability BOOLEAN NOT NULL DEFAULT TRUE,
     discount DECIMAL(10, 2) DEFAULT 0,
