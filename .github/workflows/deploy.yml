@@ -26,8 +26,8 @@ jobs:
       - name: build and push docker img to ECR
         run: |
           IMAGE_URI=${{secrets.ECR_REPOSITORY}}:latest
-          docker build -t $IMAGE_URI .
-          docker push $IMAGE_URI
+          docker buildx create --use
+          docker buildx build --platform linux/arm64 -t $IMAGE_URI --push .
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
