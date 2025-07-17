@@ -1,0 +1,42 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: AWS Credential configures
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{secrets.AWS_ACCESS_KEY_ID}}
+          aws-secret-access-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          aws-region: ${{secrets.AWS_REGION}}
+
+      - name: AWS ECR Login
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: build and push docker img to ECR
+        run: |
+          IMAGE_URI=${{secrets.ECR_REPOSITORY}}:latest
+          docker build -t $IMAGE_URI .
+          docker push $IMAGE_URI
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
+          script: |
+            docker pull ${{ secrets.ECR_REPOSITORY }}:latest
+            docker stop restaurant || true
+            docker rm restaurant || true
+            docker run -d --name restaurant -p 80:3000 ${{ secrets.ECR_REPOSITORY }}:latest

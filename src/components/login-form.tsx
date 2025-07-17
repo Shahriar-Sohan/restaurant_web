@@ -72,7 +72,7 @@ export function LoginForm() {
               <Lock className="w-8 h-8 text-white" />
             </div>
             <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
-              Admin Login
+              Customer Login
             </CardTitle>
             <CardDescription className="text-gray-600 dark:text-gray-300 transition-colors duration-300">
               Sign in to access the Zeus Street admin panel

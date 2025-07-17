@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Star, Users, Award, Clock } from "lucide-react"
@@ -30,7 +31,7 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-black dark:via-gray-900 dark:to-gray-800 overflow-hidden transition-colors duration-500"
+      className="relative pt-22 min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-black dark:via-gray-900 dark:to-gray-800 overflow-hidden transition-colors duration-500"
     >
       {/* Background Images */}
       <div className="absolute inset-0">
@@ -94,7 +95,7 @@ export function Hero() {
               className="text-center transform transition-all duration-300 hover:scale-105 cursor-default"
             >
               <div className="inline-flex items-center justify-center w-16 h-16 bg-white/10 dark:bg-white/5 backdrop-blur-sm rounded-full mb-4 transition-colors duration-300">
-                <stat.icon className="w-8 h-8 text-white dark:text-gray-100" />
+                {React.createElement(stat.icon, { className: "w-8 h-8 text-white dark:text-gray-100" })}
               </div>
               <div className="text-3xl md:text-4xl font-bold text-white dark:text-gray-100 mb-2">
                 {stat.value}

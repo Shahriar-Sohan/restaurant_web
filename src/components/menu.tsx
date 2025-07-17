@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/lib/cart-context"
+import Image from "next/image";
 
 export function Menu() {
   const { dispatch } = useCart()
