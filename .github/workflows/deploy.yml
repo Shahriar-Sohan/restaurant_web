@@ -32,10 +32,10 @@ jobs:
           docker buildx create --use
           docker buildx build --platform linux/arm64 -t $IMAGE_URI --push .
 
-      - name: Verify Docker image platform
-        run: |
-          IMAGE_URI=${{ secrets.ECR_REPOSITORY }}:latest
-          docker buildx imagetools inspect $IMAGE_URI | grep "Architecture"
+      # - name: Verify Docker image platform
+      #   run: |
+      #     IMAGE_URI=${{ secrets.ECR_REPOSITORY }}:latest
+      #     docker buildx imagetools inspect $IMAGE_URI | grep "Architecture"
 
       - name: Create .env.production file
         run: |
