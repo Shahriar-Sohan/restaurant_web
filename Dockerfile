@@ -1,7 +1,6 @@
 #BUILDER
 FROM node:18-alpine AS builder
 
-
 WORKDIR /app
 
 # Install OpenSSL 3 (required by Prisma native binary)
@@ -10,10 +9,10 @@ RUN apk add --no-cache openssl3
 # Copy package files
 COPY package*.json ./
 
-
 # Install dependencies
 RUN npm install
 
+# Copy Prisma schema
 COPY prisma ./prisma
 
 # Generate Prisma Client
@@ -22,17 +21,15 @@ RUN npx prisma generate
 # Copy source code
 COPY . .
 
+# Build the application
+RUN npm run build
+
 EXPOSE 3000
 
 ENV NODE_ENV=production
 ENV NEXT_DISABLE_ESLINT=true
 
-
 #RUNNER
-
-# Build the application
-RUN npm run build
-
 FROM node:18-alpine AS runner
 
 # Set working directory
