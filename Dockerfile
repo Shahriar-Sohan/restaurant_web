@@ -17,7 +17,7 @@ RUN npm install
 COPY prisma ./prisma
 
 # Generate Prisma Client
-RUN npx prisma generate --generator client --binary-target=linux-musl-arm64-openssl-3.0.x
+RUN npx prisma generate
 
 # Copy source code
 COPY . .
