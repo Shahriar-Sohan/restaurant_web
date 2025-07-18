@@ -1,15 +1,23 @@
 #BUILDER
 FROM node:18-alpine AS builder
 
+
 WORKDIR /app
+
+# Install OpenSSL 3 (required by Prisma native binary)
+RUN apk add --no-cache openssl3
 
 # Copy package files
 COPY package*.json ./
-COPY prisma ./prisma
+
 
 # Install dependencies
 RUN npm install
-RUN npx prisma generate
+
+COPY prisma ./prisma
+
+# Generate Prisma Client
+RUN npx prisma generate --generator client --binary-target=linux-musl-arm64-openssl-3.0.x
 
 # Copy source code
 COPY . .
@@ -39,9 +47,8 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
-
-# If you're using .env.production, uncomment below:
-# COPY --from=builder /app/.env.production .env
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/.env.production .env
 
 # Expose the port
 EXPOSE 3000
