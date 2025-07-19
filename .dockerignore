@@ -1,8 +1,5 @@
-node_modules/*
-!node_modules/.prisma
+node_modules
 .dockerignore
-Dockerfile
-.env*
 .git
 .gitignore
 .vscode

@@ -99,7 +99,7 @@ const useMenuData = () => {
 
   const fetchCategories = useCallback(async () => {
     try {
-      const response = await fetch("http://localhost:3000/api/category")
+      const response = await fetch("/api/category");
       if (!response.ok) throw new Error('Failed to fetch categories')
 
       const categoryData: Category[] = await response.json()
@@ -125,7 +125,7 @@ const useMenuData = () => {
       const limit = loadAll ? 100000 : ITEMS_PER_PAGE
       const categoryParam = categoryId !== 0 ? `categoryId=${categoryId}&` : ''
       const response = await fetch(
-        `http://localhost:3000/api/menu?${categoryParam}limit=${limit}&offset=${offset}`
+        `/api/menu?${categoryParam}limit=${limit}&offset=${offset}`
       )
 
       if (!response.ok) throw new Error('Failed to fetch menu items')
