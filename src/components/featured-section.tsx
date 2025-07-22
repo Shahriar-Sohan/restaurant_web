@@ -140,7 +140,7 @@ export function FeaturedSection() {
                   </button>
 
                   {/* Info Overlay */}
-                  <div className="absolute bottom-6 left-6 right-6 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl p-4 transform translate-y-full group-hover:translate-y-0 transition-all duration-500 shadow-xl border border-white/50 dark:border-gray-700/50">
+                  <div className="absolute bottom-6 left-6 right-6 bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl p-4 transform translate-y-30 group-hover:translate-y-0 transition-all duration-500 shadow-xl border border-white/50 dark:border-gray-700/50">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
                         <div className="flex items-center gap-1">
