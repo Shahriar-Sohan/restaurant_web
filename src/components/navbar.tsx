@@ -11,10 +11,6 @@ import {
   MobileNavMenu,
 } from "@/components/ui/resizable-navbar";
 import { useState } from "react";
-import Link from "next/link"
-import { Menu } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { CartButton } from "@/components/cart-button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useRouter } from "next/navigation"
@@ -82,26 +78,37 @@ export function NavigationBar() {
 
 
             <div className="flex w-full flex-col gap-4">
-              <NavbarButton>
                 <CartButton />
-              </NavbarButton>
-              <NavbarButton>
+              
+              
                 <ThemeToggle />
-              </NavbarButton>
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Login
-              </NavbarButton>
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Sign Up
-              </NavbarButton>
+              
+              {user ? (
+                <NavbarButton
+                  onClick={() => { signOut(); setIsMobileMenuOpen(false); }}
+                  variant="primary"
+                  className="w-full"
+                >
+                  Sign Out
+                </NavbarButton>
+              ) : (
+                <>
+                  <NavbarButton
+                    onClick={() => { router.push("/login"); setIsMobileMenuOpen(false); }}
+                    variant="secondary"
+                    className="w-full"
+                  >
+                    Login
+                  </NavbarButton>
+                  <NavbarButton
+                    onClick={() => { router.push("/signup"); setIsMobileMenuOpen(false); }}
+                    variant="primary"
+                    className="w-full"
+                  >
+                    Sign Up
+                  </NavbarButton>
+                </>
+              )}
             </div>
           </MobileNavMenu>
         </MobileNav>
