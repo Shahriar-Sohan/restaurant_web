@@ -1,6 +1,6 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import localFont from "next/font/local";
 import "./globals.css"
 import { CartProvider } from "@/lib/cart-context"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -8,7 +8,9 @@ import SessionWrapper from "@/components/SessionWrapper"
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/lib/authOptions"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = localFont({
+  src: "./fonts/Inter-VariableFont_opsz,wght.ttf",
+});
 
 export const metadata: Metadata = {
   title: "Zeus Street Greek - Authentic Greek Street Food",
