@@ -18,6 +18,8 @@ export interface ContainerTextFlipProps {
   animationDuration?: number;
   /** Delay in milliseconds after completing the entire array before restarting */
   postArrayDelay?: number;
+  /** Multiplier to slow down animation duration for the last word */
+  lastWordAnimationSpeed?: number;
 }
 
 export function ContainerTextFlip({
@@ -27,6 +29,7 @@ export function ContainerTextFlip({
   textClassName,
   animationDuration = 700,
   postArrayDelay = 1000,
+  lastWordAnimationSpeed = 2,
 }: ContainerTextFlipProps) {
   const id = useId();
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -64,11 +67,17 @@ export function ContainerTextFlip({
   }, [words, interval, postArrayDelay, currentWordIndex]);
 
   return (
-    <motion.p
+    <motion.div
       layout
       layoutId={`words-here-${id}`}
       animate={{ width }}
-      transition={{ duration: animationDuration / 2000 }}
+      transition={{
+        duration:
+          (currentWordIndex === words.length - 1
+            ? animationDuration * lastWordAnimationSpeed
+            : animationDuration) / 1000,
+        ease: "easeInOut",
+      }}
       className={cn(
         "relative inline-block rounded-lg pt-2 pb-3 text-center text-4xl font-bold text-black md:text-7xl dark:text-white",
         
@@ -78,7 +87,10 @@ export function ContainerTextFlip({
     >
       <motion.div
         transition={{
-          duration: animationDuration / 1000,
+          duration:
+            (currentWordIndex === words.length - 1
+              ? animationDuration * lastWordAnimationSpeed
+              : animationDuration) / 1000,
           ease: "easeInOut",
         }}
         className={cn("inline-block", textClassName)}
@@ -98,7 +110,11 @@ export function ContainerTextFlip({
                 filter: "blur(0px)",
               }}
               transition={{
-                delay: index * 0.02,
+                delay:
+                  index *
+                  (currentWordIndex === words.length - 1
+                    ? 0.02 * lastWordAnimationSpeed
+                    : 0.02),
               }}
             >
               {letter}
@@ -106,6 +122,6 @@ export function ContainerTextFlip({
           ))}
         </motion.div>
       </motion.div>
-    </motion.p>
+    </motion.div>
   );
 }

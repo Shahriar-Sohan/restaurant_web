@@ -29,8 +29,9 @@ export function Hero() {
         {/* Main Heading */}
         <div className="text-6xl md:text-8xl lg:text-9xl font-bold mb-8 leading-tight flex flex-row items-center justify-center">
             <ContainerTextFlip
-            words={["Authentic", "Greek", "Street Foods", "Authentic \n Greek Street Food"]}
+            words={["Authentic", "Greek", "Street Foods", "RivalRay"]}
             interval={1000}
+            lastWordAnimationSpeed={1.5}
             postArrayDelay={3000}
             className="flex flex-row items-center justify-center"
             textClassName="font-bold"

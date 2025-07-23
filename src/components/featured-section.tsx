@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Star, Heart, Clock, Flame, ArrowRight, Award, ChefHat, Sparkles } from "lucide-react"
 import Image from "next/image"
+import { VideoText } from "./ui/video-text"
 
 export function FeaturedSection() {
   const [hoveredItem, setHoveredItem] = useState<number | null>(null)
@@ -68,21 +69,21 @@ export function FeaturedSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/30 border border-amber-200/50 dark:border-amber-700/50 rounded-full px-6 py-3 mb-6 shadow-lg backdrop-blur-sm transition-colors duration-500">
-            <div className="w-8 h-8 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
-              <Sparkles className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-amber-800 dark:text-amber-200 font-semibold tracking-wide transition-colors duration-500">
-              SIGNATURE COLLECTION
-            </span>
+          
+          <div className="text-5xl md:text-7xl font-bold mb-4 leading-tight">
+            
+            
+                  <VideoText 
+                  src="/cooking.gif" 
+                  fontSize={8}
+                  fontWeight={900}
+                  
+                  >
+              CULINARY MASTERPIECE
+            </VideoText>
+            
+            
           </div>
-
-          <h2 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-            <span className="block text-slate-900 dark:text-white mb-2 transition-colors duration-500">Culinary</span>
-            <span className="block bg-gradient-to-r from-blue-600 via-purple-600 to-amber-600 dark:from-blue-400 dark:via-purple-400 dark:to-amber-400 bg-clip-text text-transparent">
-              Masterpieces
-            </span>
-          </h2>
 
           <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed font-light transition-colors duration-500">
             Each dish is a testament to our commitment to authentic Greek flavors,
