@@ -1,18 +1,12 @@
 "use client"
 
 import React from "react"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Star, Users, Award, Clock } from "lucide-react"
+import { ContainerTextFlip } from "./ui/container-text-flip"
 
 export function Hero() {
-  const [currentSlide, setCurrentSlide] = useState(0)
-
-  const heroImages = [
-    "/placeholder.svg?height=800&width=1200&text=Greek+Gyros",
-    "/placeholder.svg?height=800&width=1200&text=Fresh+Salads",
-    "/placeholder.svg?height=800&width=1200&text=Grilled+Meats",
-  ]
 
   const stats = [
     { icon: Star, value: "4.9", label: "Rating", suffix: "/5" },
@@ -21,48 +15,28 @@ export function Hero() {
     { icon: Clock, value: "20", label: "Min Delivery", suffix: "" },
   ]
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroImages.length)
-    }, 4000)
-    return () => clearInterval(interval)
-  }, [heroImages.length])
+
 
   return (
     <section
       id="home"
       className="relative pt-22 min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black dark:from-black dark:via-gray-900 dark:to-gray-800 overflow-hidden transition-colors duration-500"
     >
-      {/* Background Images */}
-      <div className="absolute inset-0">
-        {heroImages.map((image, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentSlide ? "opacity-30 dark:opacity-20" : "opacity-0"
-            }`}
-          >
-            <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: `url(${image})` }} />
-          </div>
-        ))}
-      </div>
+      
 
       {/* Main Content */}
       <div className="relative z-10 max-w-6xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/10 rounded-full px-4 py-2 mb-8 transition-colors duration-500">
-          <Star className="w-4 h-4 text-yellow-400 fill-current" />
-          <span className="text-white dark:text-gray-100 text-sm font-medium">Authentic Greek Experience</span>
-        </div>
 
         {/* Main Heading */}
-        <h1 className="text-6xl md:text-8xl lg:text-9xl font-bold mb-8 leading-tight">
-          <span className="block text-white dark:text-gray-100 transition-colors duration-300">Authentic</span>
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 dark:from-blue-300 dark:via-purple-400 dark:to-pink-400 transition-colors duration-300">
-            Greek Street
-          </span>
-          <span className="block text-white dark:text-gray-100 transition-colors duration-300">Food</span>
-        </h1>
+        <div className="text-6xl md:text-8xl lg:text-9xl font-bold mb-8 leading-tight flex flex-row items-center justify-center">
+<ContainerTextFlip
+words={["Authentic", "Greek", "Street Foods", "Authentic \n Greek Street Food"]}
+interval={1000}
+postArrayDelay={3000}
+className="flex flex-row items-center justify-center"
+textClassName="font-bold"
+/>
+        </div>
 
         {/* Subtitle */}
         <p className="text-xl md:text-2xl lg:text-3xl text-gray-300 dark:text-gray-200 mb-12 max-w-4xl mx-auto leading-relaxed transition-colors duration-500">
@@ -105,21 +79,6 @@ export function Hero() {
             </div>
           ))}
         </div>
-      </div>
-
-      {/* Slide Indicators */}
-      <div className="absolute bottom-8 right-8 flex gap-2">
-        {heroImages.map((_, index) => (
-          <button
-            key={index}
-            className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === currentSlide
-                ? "bg-white dark:bg-gray-100 scale-125"
-                : "bg-white/30 dark:bg-white/20 hover:bg-white/50 dark:hover:bg-white/40"
-            }`}
-            onClick={() => setCurrentSlide(index)}
-          />
-        ))}
       </div>
     </section>
   )
