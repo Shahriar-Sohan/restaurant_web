@@ -1,7 +1,6 @@
 "use client"
 
 import React from "react"
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Star, Users, Award, Clock } from "lucide-react"
 import { ContainerTextFlip } from "./ui/container-text-flip"
@@ -29,13 +28,13 @@ export function Hero() {
 
         {/* Main Heading */}
         <div className="text-6xl md:text-8xl lg:text-9xl font-bold mb-8 leading-tight flex flex-row items-center justify-center">
-<ContainerTextFlip
-words={["Authentic", "Greek", "Street Foods", "Authentic \n Greek Street Food"]}
-interval={1000}
-postArrayDelay={3000}
-className="flex flex-row items-center justify-center"
-textClassName="font-bold"
-/>
+            <ContainerTextFlip
+            words={["Authentic", "Greek", "Street Foods", "Authentic \n Greek Street Food"]}
+            interval={1000}
+            postArrayDelay={3000}
+            className="flex flex-row items-center justify-center"
+            textClassName="font-bold"
+            />
         </div>
 
         {/* Subtitle */}
