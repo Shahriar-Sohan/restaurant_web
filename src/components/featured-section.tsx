@@ -191,7 +191,7 @@ export function FeaturedSection() {
                         </div>
                         <span className="font-bold text-slate-900 dark:text-white">{item.rating}</span>
                         <span className="text-slate-500 dark:text-slate-400 text-sm">
-                          ({item.reviews.toLocaleString()})
+                          ({(item.reviews ?? 0).toLocaleString()})
                         </span>
                       </div>
                       <Award className="w-5 h-5 text-amber-500" />
