@@ -47,14 +47,14 @@ async function main() {
     // Pizza items
     await prisma.menu.createMany({
       data: [
-        { category_id: pizza.category_id, food_name: 'Margherita Pizza', description: 'Classic mozzarella and basil', price: 9.99, ingredients: ['dough', 'mozzarella', 'basil'], availability: true, image: '/images/menu/margherita-pizza.jpg' },
-        { category_id: pizza.category_id, food_name: 'Pepperoni Pizza', description: 'Loaded with spicy pepperoni', price: 11.99, ingredients: ['dough', 'mozzarella', 'pepperoni'], availability: true, image: '/images/menu/pepperoni-pizza.jpg' },
+        { category_id: pizza.category_id, food_name: 'Margherita Pizza', description: 'Classic mozzarella and basil', price: 9.99, ingredients: ['dough', 'mozzarella', 'basil'], availability: true, image: '/images/menu/margherita-pizza.webp' },
+        { category_id: pizza.category_id, food_name: 'Pepperoni Pizza', description: 'Loaded with spicy pepperoni', price: 11.99, ingredients: ['dough', 'mozzarella', 'pepperoni'], availability: true, image: '/images/menu/pepperoni-pizza.webp' },
         { category_id: pizza.category_id, food_name: 'Veggie Delight', description: 'Topped with fresh veggies', price: 10.49, ingredients: ['dough', 'bell pepper', 'olives', 'onions'], availability: true, image: '/images/menu/veggie-delight.jpg' },
         { category_id: pizza.category_id, food_name: 'BBQ Chicken Pizza', description: 'BBQ sauce and grilled chicken', price: 12.49, ingredients: ['dough', 'BBQ sauce', 'chicken'], availability: true, image: '/images/menu/bbq-chicken-pizza.jpg' },
-        { category_id: pizza.category_id, food_name: 'Four Cheese Pizza', description: 'A cheese lover’s dream', price: 11.49, ingredients: ['mozzarella', 'cheddar', 'parmesan', 'gorgonzola'], availability: true, image: '/images/menu/four-cheese-pizza.jpg' },
-        { category_id: pizza.category_id, food_name: 'Hawaiian Pizza', description: 'Ham and pineapple combo', price: 11.29, ingredients: ['dough', 'ham', 'pineapple'], availability: true, image: '/images/menu/hawaiian-pizza.jpg' },
+        { category_id: pizza.category_id, food_name: 'Four Cheese Pizza', description: 'A cheese lover’s dream', price: 11.49, ingredients: ['mozzarella', 'cheddar', 'parmesan', 'gorgonzola'], availability: true, image: '/images/menu/four-cheese-pizza.webp' },
+        { category_id: pizza.category_id, food_name: 'Hawaiian Pizza', description: 'Ham and pineapple combo', price: 11.29, ingredients: ['dough', 'ham', 'pineapple'], availability: true, image: '/images/menu/hawaiian-pizza.webp' },
         { category_id: pizza.category_id, food_name: 'Buffalo Chicken Pizza', description: 'Spicy buffalo sauce', price: 12.99, ingredients: ['dough', 'buffalo sauce', 'chicken'], availability: true, image: '/images/menu/buffalo-chicken-pizza.jpg' },
-        { category_id: pizza.category_id, food_name: 'Mushroom Truffle Pizza', description: 'Earthy mushrooms and truffle oil', price: 13.49, ingredients: ['dough', 'mushrooms', 'truffle oil'], availability: true, image: '/images/menu/mushroom-truffle-pizza.jpg' },
+        { category_id: pizza.category_id, food_name: 'Mushroom Truffle Pizza', description: 'Earthy mushrooms and truffle oil', price: 13.49, ingredients: ['dough', 'mushrooms', 'truffle oil'], availability: true, image: '/images/menu/mushroom-truffle-pizza.jpeg' },
       ],
       skipDuplicates: true,
     });
@@ -79,11 +79,11 @@ async function main() {
       data: [
         { category_id: drinks.category_id, food_name: 'Cola', description: 'Chilled fizzy drink', price: 1.99, ingredients: ['water', 'sugar', 'carbonation'], availability: true, image: '/images/menu/cola.jpg' },
         { category_id: drinks.category_id, food_name: 'Lemonade', description: 'Fresh lemon drink', price: 2.49, ingredients: ['lemon', 'sugar', 'water'], availability: true, image: '/images/menu/lemonade.jpg' },
-        { category_id: drinks.category_id, food_name: 'Iced Tea', description: 'Cold refreshing tea', price: 2.29, ingredients: ['tea', 'lemon', 'ice'], availability: true, image: '/images/menu/iced-tea.jpg' },
+        { category_id: drinks.category_id, food_name: 'Iced Tea', description: 'Cold refreshing tea', price: 2.29, ingredients: ['tea', 'lemon', 'ice'], availability: true, image: '/images/menu/iced-tea.png' },
         { category_id: drinks.category_id, food_name: 'Orange Juice', description: 'Freshly squeezed oranges', price: 2.99, ingredients: ['oranges'], availability: true, image: '/images/menu/orange-juice.jpg' },
         { category_id: drinks.category_id, food_name: 'Milkshake', description: 'Creamy vanilla shake', price: 3.49, ingredients: ['milk', 'vanilla', 'sugar'], availability: true, image: '/images/menu/milkshake.jpg' },
         { category_id: drinks.category_id, food_name: 'Espresso', description: 'Strong coffee shot', price: 1.79, ingredients: ['coffee beans', 'water'], availability: true, image: '/images/menu/espresso.jpg' },
-        { category_id: drinks.category_id, food_name: 'Cappuccino', description: 'Foamy espresso drink', price: 2.99, ingredients: ['coffee', 'milk', 'foam'], availability: true, image: '/images/menu/cappuccino.jpg' },
+        { category_id: drinks.category_id, food_name: 'Cappuccino', description: 'Foamy espresso drink', price: 2.99, ingredients: ['coffee', 'milk', 'foam'], availability: true, image: '/images/menu/cappuccino.webp' },
         { category_id: drinks.category_id, food_name: 'Smoothie', description: 'Fruit blend smoothie', price: 4.49, ingredients: ['banana', 'strawberry', 'yogurt'], availability: true, image: '/images/menu/smoothie.jpg' },
       ],
       skipDuplicates: true,

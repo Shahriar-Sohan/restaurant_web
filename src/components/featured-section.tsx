@@ -8,6 +8,7 @@ import { Star, Heart, Clock, Flame, ArrowRight, Award, ChefHat } from "lucide-re
 import Image from "next/image";
 import { VideoText } from "./ui/video-text";
 import { SkeletonCard } from "@/components/ui/skeleton";
+import Link from "next/link";
 
 type MenuItem = {
   food_id: number;
@@ -213,11 +214,11 @@ export function FeaturedSection() {
                 </div>
 
                 <CardContent className="p-8">
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
+                  <h3 className="text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
                     {item.food_name}
                   </h3>
 
-                  <p className="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed font-light transition-colors duration-300">
+                  <p className="text-lg sm:text-xl text-slate-600 dark:text-slate-300 mb-6 leading-relaxed font-light transition-colors duration-300">
                     {item.description}
                   </p>
 
@@ -242,11 +243,11 @@ export function FeaturedSection() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <span className="text-3xl font-bold bg-gradient-to-r from-slate-900 to-blue-600 dark:from-white dark:to-blue-400 bg-clip-text text-transparent">
-                        {item.price}
+                        ${item.price}
                       </span>
                       {item.originalPrice && (
                         <span className="text-lg text-slate-400 dark:text-slate-500 line-through font-medium">
-                          {item.originalPrice}
+                          ${item.originalPrice}
                         </span>
                       )}
                     </div>
@@ -265,15 +266,15 @@ export function FeaturedSection() {
         </div>
 
         {/* CTA */}
-        <div className="text-center mt-16">
+        <Link href='/menu' className="text-center mt-16">
           <Button
             size="lg"
-            className="group bg-gradient-to-r from-slate-900 to-blue-900 hover:from-slate-800 hover:to-blue-800 dark:from-white dark:to-blue-100 dark:hover:from-gray-100 dark:hover:to-blue-200 text-white dark:text-gray-900 font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-xl"
+            className="group cursor-pointer bg-gradient-to-r from-slate-900 to-blue-900 hover:from-slate-800 hover:to-blue-800 dark:from-white dark:to-blue-100 dark:hover:from-gray-100 dark:hover:to-blue-200 text-white dark:text-gray-900 font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-xl"
           >
             <span className="mr-3 text-lg">Explore Complete Menu</span>
             <ArrowRight className="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" />
           </Button>
-        </div>
+        </Link>
       </div>
     </section>
   );
