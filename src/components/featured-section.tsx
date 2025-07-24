@@ -1,88 +1,117 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Star, Heart, Clock, Flame, ArrowRight, Award, ChefHat, Sparkles } from "lucide-react"
-import Image from "next/image"
-import { VideoText } from "./ui/video-text"
+import { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Star, Heart, Clock, Flame, ArrowRight, Award, ChefHat } from "lucide-react";
+import Image from "next/image";
+import { VideoText } from "./ui/video-text";
+import { SkeletonCard } from "@/components/ui/skeleton";
+
+type MenuItem = {
+  food_id: number;
+  food_name: string;
+  description: string;
+  price: string;
+  originalPrice?: string | null;
+  image: string;
+  rating: number;
+  reviews: number;
+  cookTime: string;
+  isSpicy: boolean;
+  isPopular: boolean;
+  discount?: string | null;
+  chef: string;
+  ingredients: string[];
+  category_id: number;
+};
+
+type Category = {
+  category_id: number;
+  category_title: string;
+};
 
 export function FeaturedSection() {
-  const [hoveredItem, setHoveredItem] = useState<number | null>(null)
+  const [featuredItems, setFeaturedItems] = useState<MenuItem[] | null>(null);
+  const [categories, setCategories] = useState<Record<number, string>>({});
+  const [hoveredItem, setHoveredItem] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const featuredItems = [
-    {
-      id: 1,
-      name: "Zeus Signature Wrap",
-      description:
-        "Masterfully crafted with premium marinated chicken, house-made tzatziki, and garden-fresh vegetables",
-      price: "$14.90",
-      originalPrice: "$16.90",
-      image: "/placeholder.svg?height=400&width=600&text=Zeus+Signature+Wrap",
-      rating: 4.9,
-      reviews: 1250,
-      cookTime: "8 min",
-      isSpicy: false,
-      isPopular: true,
-      discount: "15% OFF",
-      chef: "Chef's Choice",
-      ingredients: ["Premium Chicken", "House Tzatziki", "Fresh Vegetables", "Artisan Pita"],
-    },
-    {
-      id: 2,
-      name: "Mediterranean Royale Bowl",
-      description:
-        "An exquisite blend of quinoa, grilled chicken, imported feta, Kalamata olives, and signature dressing",
-      price: "$15.90",
-      originalPrice: null,
-      image: "/placeholder.svg?height=400&width=600&text=Mediterranean+Royale+Bowl",
-      rating: 4.8,
-      reviews: 890,
-      cookTime: "12 min",
-      isSpicy: false,
-      isPopular: false,
-      discount: null,
-      chef: "Artisan Crafted",
-      ingredients: ["Organic Quinoa", "Grilled Chicken", "Imported Feta", "Kalamata Olives"],
-    },
-    {
-      id: 3,
-      name: "Spartan Lamb Souvlaki",
-      description: "Tender lamb skewers with authentic Greek spices, served with warm pita and cooling tzatziki",
-      price: "$18.90",
-      originalPrice: null,
-      image: "/placeholder.svg?height=400&width=600&text=Spartan+Lamb+Souvlaki",
-      rating: 4.7,
-      reviews: 650,
-      cookTime: "15 min",
-      isSpicy: true,
-      isPopular: false,
-      discount: null,
-      chef: "Traditional Recipe",
-      ingredients: ["Premium Lamb", "Greek Spices", "Artisan Pita", "House Tzatziki"],
-    },
-  ]
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const [menuRes, catRes] = await Promise.all([
+          fetch("/api/menu"),
+          fetch("/api/category"),
+        ]);
+        if (!menuRes.ok || !catRes.ok) throw new Error("Failed to fetch data");
+
+        const menuData: MenuItem[] = await menuRes.json();
+        const categoryData: Category[] = await catRes.json();
+
+        // Map category_id to category_title
+        const categoryMap: Record<number, string> = {};
+        categoryData.forEach((cat) => {
+          categoryMap[cat.category_id] = cat.category_title;
+        });
+        setCategories(categoryMap);
+
+        // Group menu items by category_id
+        const grouped = menuData.reduce((acc, item) => {
+          if (!acc[item.category_id]) acc[item.category_id] = [];
+          acc[item.category_id].push(item);
+          return acc;
+        }, {} as Record<number, MenuItem[]>);
+
+        // Pick one random item from each category (max 3 categories)
+        const randomItems: MenuItem[] = [];
+        Object.values(grouped).slice(0, 3).forEach((items) => {
+          if (items.length > 0) {
+            const randomIndex = Math.floor(Math.random() * items.length);
+            randomItems.push(items[randomIndex]);
+          }
+        });
+
+        setFeaturedItems(randomItems);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load featured items.");
+      }
+    }
+
+    fetchData();
+  }, []);
+
+  if (error) {
+    return (
+      <section className="py-32 text-center text-red-600">
+        <p>{error}</p>
+      </section>
+    );
+  }
+
+  if (!featuredItems) {
+    return (
+      <section className="py-32 text-center">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 justify-center items-center">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-32 bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-blue-900/20 relative overflow-hidden transition-colors duration-500">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-20">
-          
           <div className="text-5xl md:text-7xl font-bold mb-4 leading-tight">
-            
-            
-                  <VideoText 
-                  src="/cooking.gif" 
-                  fontSize={8}
-                  fontWeight={900}
-                  
-                  >
+            <VideoText src="/cooking.gif" fontSize={8} fontWeight={900}>
               CULINARY MASTERPIECE
             </VideoText>
-            
-            
           </div>
 
           <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto leading-relaxed font-light transition-colors duration-500">
@@ -96,7 +125,7 @@ export function FeaturedSection() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
           {featuredItems.map((item, index) => (
             <div
-              key={item.id}
+              key={item.food_id}
               className={`group relative transform transition-all duration-500 ${
                 hoveredItem === index ? "scale-105 z-20" : "hover:scale-105"
               }`}
@@ -104,20 +133,24 @@ export function FeaturedSection() {
               onMouseLeave={() => setHoveredItem(null)}
             >
               <Card className="overflow-hidden bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-500">
-                {/* Image Container */}
                 <div className="relative overflow-hidden">
                   <div className="aspect-[4/3] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-gray-800 dark:to-gray-700">
                     <Image
                       src={item.image || "/placeholder.svg"}
-                      alt={item.name}
+                      alt={item.food_name}
                       width={600}
                       height={400}
                       className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
                     />
                   </div>
 
+                  {/* Category badge */}
+                  <Badge className="absolute top-6 left-6 bg-blue-600 text-white font-semibold px-3 py-1 rounded shadow-lg">
+                    {categories[item.category_id] || "Unknown"}
+                  </Badge>
+
                   {/* Badges */}
-                  <div className="absolute top-6 left-6 flex flex-col gap-3">
+                  <div className="absolute top-14 left-6 flex flex-col gap-3">
                     {item.discount && (
                       <Badge className="bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white font-semibold px-3 py-1 shadow-lg">
                         {item.discount}
@@ -179,10 +212,9 @@ export function FeaturedSection() {
                   </div>
                 </div>
 
-                {/* Content */}
                 <CardContent className="p-8">
                   <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300">
-                    {item.name}
+                    {item.food_name}
                   </h3>
 
                   <p className="text-slate-600 dark:text-slate-300 mb-6 leading-relaxed font-light transition-colors duration-300">
@@ -244,5 +276,5 @@ export function FeaturedSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }
