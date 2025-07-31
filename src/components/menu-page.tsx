@@ -320,9 +320,11 @@ export function MenuPage() {
 
   // Infinite scroll handler
   const handleScroll = useCallback((categoryId: string) => {
+    // Prevent NaN fetch for "all" category
+    if (categoryId === "all") return  // Prevent NaN fetch
     const container = containerRefs.current[categoryId]
     const numericId = Number(categoryId)
-    if (!container || allLoadedByCategory[numericId] || loadingByCategory[numericId]) return
+    if (!container || isNaN(numericId) || allLoadedByCategory[numericId] || loadingByCategory[numericId]) return
 
     const threshold = 100
     const { scrollWidth, scrollLeft, clientWidth } = container
