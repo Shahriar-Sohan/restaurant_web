@@ -5,7 +5,7 @@ export default function Contact() {
   return (
     <main className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
       <NavigationBar />
-      <div className="pt-16">
+      <div className="">
         <ContactPage />
       </div>
     </main>

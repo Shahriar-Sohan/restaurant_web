@@ -58,21 +58,13 @@ export function FeaturedSection() {
         });
         setCategories(categoryMap);
 
-        // Group menu items by category_id
-        const grouped = menuData.reduce((acc, item) => {
-          if (!acc[item.category_id]) acc[item.category_id] = [];
-          acc[item.category_id].push(item);
-          return acc;
-        }, {} as Record<number, MenuItem[]>);
+        // Shuffle all menu items and pick 3 random items
+        function shuffleArray<T>(array: T[]): T[] {
+          return [...array].sort(() => Math.random() - 0.5);
+        }
 
-        // Pick one random item from each category (max 3 categories)
-        const randomItems: MenuItem[] = [];
-        Object.values(grouped).slice(0, 3).forEach((items) => {
-          if (items.length > 0) {
-            const randomIndex = Math.floor(Math.random() * items.length);
-            randomItems.push(items[randomIndex]);
-          }
-        });
+        const shuffledItems = shuffleArray(menuData);
+        const randomItems = shuffledItems.slice(0, 3);
 
         setFeaturedItems(randomItems);
       } catch (err) {

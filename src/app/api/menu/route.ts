@@ -3,9 +3,23 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/authOptions"
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const menuItems = await prisma.menu.findMany();
+    const { searchParams } = new URL(request.url);
+    const categoryId = searchParams.get("categoryId");
+    const limit = parseInt(searchParams.get("limit") || "10");
+    const offset = parseInt(searchParams.get("offset") || "0");
+
+    const whereClause = categoryId && categoryId !== "0" ? { category_id: parseInt(categoryId) } : undefined;
+
+    const menuItems = await prisma.menu.findMany({
+      where: whereClause,
+      take: limit,
+      skip: offset,
+      orderBy: {
+        food_id: "asc"
+      }
+    })
     return NextResponse.json(menuItems);
   } catch (error) {
     console.error("[GET /api/menu]", error);

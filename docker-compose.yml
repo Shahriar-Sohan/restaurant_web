@@ -1,24 +1,19 @@
 version: "3.9"
 services:
   web:
-    image: restaurant:latest
+    build: .
     ports:
       - "3000:3000"
     volumes:
+      - .:/app
       - /app/node_modules
     working_dir: /app
     env_file:
       - .env
     depends_on:
       - db
-    command: sh -c "npm run build && npm start"
+    command: npm run dev
 
-  # redis:
-  #   image: redis:7-alpine
-  #   ports:
-  #     - "6379:6379"
-
-  # Uncomment this later when you add PostgreSQL:
   db:
     image: postgres:16-alpine
     restart: always
