@@ -53,23 +53,24 @@ const useCart = () => {
 
   const addToCart = useCallback((item: MenuItem, categoryTitle: string) => {
     setCart(prev => {
-      const existing = prev.find(cartItem => cartItem.id === item.food_id)
-      if (existing) {
-        return prev.map(cartItem =>
-          cartItem.id === item.food_id
-            ? { ...cartItem, quantity: cartItem.quantity + 1 }
-            : cartItem
-        )
+      const existingIndex = prev.findIndex(cartItem => cartItem.id === item.food_id)
+      if (existingIndex !== -1) {
+        const updated = [...prev]
+        updated[existingIndex].quantity += 1
+        return updated
       } else {
-        return [...prev, {
-          id: item.food_id,
-          name: item.food_name,
-          price: item.price,
-          image: item.image,
-          description: item.description,
-          category: categoryTitle,
-          quantity: 1
-        }]
+        return [
+          ...prev,
+          {
+            id: item.food_id,
+            name: item.food_name,
+            price: item.price,
+            image: item.image,
+            description: item.description,
+            category: categoryTitle,
+            quantity: 1
+          }
+        ]
       }
     })
   }, [])
@@ -404,8 +405,8 @@ export function MenuPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 transition-colors duration-300">
       {/* Hero Section */}
-      <section className="relative py-30 bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-800 dark:to-purple-800 text-white">
-        <div className="absolute inset-0 bg-black/20"></div>
+      <section className="relative py-30 bg-gradient-to-r light:from-blue-700 light:to-purple-700 dark:from-blue-800 dark:to-purple-800 text-white">
+        <div className="absolute inset-0 bg-blue-700 dark:bg-black/20"></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fade-in">Our Menu</h1>
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">

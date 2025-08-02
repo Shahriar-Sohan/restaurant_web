@@ -35,12 +35,12 @@ exports.Prisma = Prisma
 exports.$Enums = {}
 
 /**
- * Prisma Client JS version: 6.12.0
- * Query Engine version: 8047c96bbd92db98a2abc7c9323ce77c02c89dbc
+ * Prisma Client JS version: 6.13.0
+ * Query Engine version: 361e86d0ea4987e9f53a565309b3eed797a6bcbd
  */
 Prisma.prismaVersion = {
-  client: "6.12.0",
-  engine: "8047c96bbd92db98a2abc7c9323ce77c02c89dbc"
+  client: "6.13.0",
+  engine: "361e86d0ea4987e9f53a565309b3eed797a6bcbd"
 }
 
 Prisma.PrismaClientKnownRequestError = PrismaClientKnownRequestError;
@@ -267,7 +267,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/app/src/generated/prisma",
+      "value": "/Users/r1v4l/Desktop/restaurant-enterprise/src/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -276,7 +276,7 @@ const config = {
     "binaryTargets": [
       {
         "fromEnvVar": null,
-        "value": "linux-musl-arm64-openssl-3.0.x",
+        "value": "darwin-arm64",
         "native": true
       },
       {
@@ -293,7 +293,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/app/prisma/schema.prisma",
+    "sourceFilePath": "/Users/r1v4l/Desktop/restaurant-enterprise/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -301,23 +301,23 @@ const config = {
     "schemaEnvPath": "../../../.env"
   },
   "relativePath": "../../../prisma",
-  "clientVersion": "6.12.0",
-  "engineVersion": "8047c96bbd92db98a2abc7c9323ce77c02c89dbc",
+  "clientVersion": "6.13.0",
+  "engineVersion": "361e86d0ea4987e9f53a565309b3eed797a6bcbd",
   "datasourceNames": [
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
+  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {
-        "fromEnvVar": null,
-        "value": "postgresql://user:password@db:5432/restaurant"
+        "fromEnvVar": "DATABASE_URL",
+        "value": null
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/generated/prisma\"\n  binaryTargets = [\"native\", \"linux-musl-arm64-openssl-3.0.x\", \"linux-arm64-openssl-3.0.x\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = \"postgresql://user:password@db:5432/restaurant\"\n}\n\nmodel address {\n  address_id   Int       @id @default(autoincrement())\n  user_id      Int\n  address_line String    @db.VarChar(255)\n  city         String    @db.VarChar(100)\n  postal_code  String    @db.VarChar(20)\n  country      String    @db.VarChar(100)\n  created_at   DateTime? @default(now()) @db.Timestamp(6)\n  updated_at   DateTime? @default(now()) @db.Timestamp(6)\n  users        users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)\n}\n\nmodel cart {\n  cart_id    Int          @id @default(autoincrement())\n  user_id    Int\n  created_at DateTime?    @default(now()) @db.Timestamp(6)\n  updated_at DateTime?    @default(now()) @db.Timestamp(6)\n  users      users        @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)\n  cart_items cart_items[]\n}\n\nmodel cart_items {\n  cart_item_id Int       @id @default(autoincrement())\n  cart_id      Int\n  food_id      Int\n  quantity     Int\n  created_at   DateTime? @default(now()) @db.Timestamp(6)\n  updated_at   DateTime? @default(now()) @db.Timestamp(6)\n  cart         cart      @relation(fields: [cart_id], references: [cart_id], onDelete: Cascade, onUpdate: NoAction)\n  menu         menu      @relation(fields: [food_id], references: [food_id], onDelete: NoAction, onUpdate: NoAction)\n}\n\nmodel category {\n  category_id          Int       @id @default(autoincrement())\n  category_title       String    @unique @db.VarChar(100)\n  category_description String?\n  created_at           DateTime? @default(now()) @db.Timestamp(6)\n  updated_at           DateTime? @default(now()) @db.Timestamp(6)\n  menu                 menu[]\n}\n\nmodel invoice {\n  invoice_id   Int       @id @default(autoincrement())\n  order_id     Int\n  user_id      Int\n  address_line String    @db.VarChar(255)\n  city         String    @db.VarChar(100)\n  postal_code  String    @db.VarChar(20)\n  country      String    @db.VarChar(100)\n  created_at   DateTime? @default(now()) @db.Timestamp(6)\n  updated_at   DateTime? @default(now()) @db.Timestamp(6)\n  orders       orders    @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: NoAction)\n  users        users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)\n}\n\nmodel menu {\n  food_id      Int            @id @default(autoincrement())\n  category_id  Int\n  food_name    String         @db.VarChar(255)\n  description  String?        @db.Text\n  image        String?        @db.VarChar(255)\n  price        Decimal        @db.Decimal(10, 2)\n  availability Boolean        @default(true)\n  discount     Decimal?       @default(0) @db.Decimal(10, 2)\n  rating       Decimal?       @default(0) @db.Decimal(3, 2)\n  prep_time    Int?           @default(0)\n  calories     Int?           @default(0)\n  ingredients  String[]\n  created_at   DateTime?      @default(now()) @db.Timestamp(6)\n  updated_at   DateTime?      @default(now()) @db.Timestamp(6)\n  cart_items   cart_items[]\n  category     category       @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction)\n  order_items  order_items[]\n  tags_on_menu tags_on_menu[]\n\n  @@index([category_id], map: \"idx_menu_category_id\")\n}\n\nmodel order_items {\n  order_item_id     Int       @id @default(autoincrement())\n  order_id          Int\n  food_id           Int\n  quantity          Int\n  price_at_purchase Decimal   @db.Decimal(10, 2)\n  created_at        DateTime? @default(now()) @db.Timestamp(6)\n  updated_at        DateTime? @default(now()) @db.Timestamp(6)\n  menu              menu      @relation(fields: [food_id], references: [food_id], onDelete: NoAction, onUpdate: NoAction)\n  orders            orders    @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: NoAction)\n}\n\nmodel orders {\n  order_id    Int           @id @default(autoincrement())\n  user_id     Int\n  total_price Decimal       @db.Decimal(10, 2)\n  status      order_status  @default(pending)\n  created_at  DateTime?     @default(now()) @db.Timestamp(6)\n  updated_at  DateTime?     @default(now()) @db.Timestamp(6)\n  invoice     invoice[]\n  order_items order_items[]\n  users       users         @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)\n  payments    payments[]\n\n  @@index([user_id], map: \"idx_orders_user_id\")\n}\n\nmodel payments {\n  payment_id     Int            @id @default(autoincrement())\n  order_id       Int\n  payment_method payment_method\n  payment_status payment_status @default(pending)\n  amount         Decimal        @db.Decimal(10, 2)\n  payment_time   DateTime?      @default(now()) @db.Timestamp(6)\n  orders         orders         @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: NoAction)\n}\n\nmodel tags {\n  tag_id       Int            @id @default(autoincrement())\n  tag_name     String         @unique @db.VarChar(100)\n  created_at   DateTime?      @default(now()) @db.Timestamp(6)\n  updated_at   DateTime?      @default(now()) @db.Timestamp(6)\n  tags_on_menu tags_on_menu[]\n}\n\nmodel tags_on_menu {\n  menu_id Int\n  tag_id  Int\n  menu    menu @relation(fields: [menu_id], references: [food_id], onDelete: Cascade, onUpdate: NoAction)\n  tags    tags @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, onUpdate: NoAction)\n\n  @@id([menu_id, tag_id])\n}\n\nmodel users {\n  user_id    Int       @id @default(autoincrement())\n  name       String    @db.VarChar(100)\n  email      String    @unique @db.VarChar(150)\n  pwd        String    @db.VarChar(255)\n  phone      String?   @db.VarChar(20)\n  photo      String?   @db.VarChar(255)\n  role       String    @default(\"user\") // e.g. \"user\", \"admin\"\n  created_at DateTime? @default(now()) @db.Timestamp(6)\n  updated_at DateTime? @default(now()) @db.Timestamp(6)\n  address    address[]\n  cart       cart[]\n  invoice    invoice[]\n  orders     orders[]\n}\n\nenum order_status {\n  pending\n  paid\n  cancelled\n  delivered\n}\n\nenum payment_method {\n  cash\n  card\n  paypal\n}\n\nenum payment_status {\n  pending\n  completed\n  failed\n}\n",
-  "inlineSchemaHash": "fae2cdcc6d97ed631c8500c9beb13ac42f2dc9d38507cca02a413363284694ca",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  output        = \"../src/generated/prisma\"\n  binaryTargets = [\"native\", \"linux-musl-arm64-openssl-3.0.x\", \"linux-arm64-openssl-3.0.x\", \"debian-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel address {\n  address_id   Int       @id @default(autoincrement())\n  user_id      Int\n  address_line String    @db.VarChar(255)\n  city         String    @db.VarChar(100)\n  postal_code  String    @db.VarChar(20)\n  country      String    @db.VarChar(100)\n  created_at   DateTime? @default(now()) @db.Timestamp(6)\n  updated_at   DateTime? @default(now()) @db.Timestamp(6)\n  users        users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)\n}\n\nmodel cart {\n  cart_id    Int          @id @default(autoincrement())\n  user_id    Int\n  created_at DateTime?    @default(now()) @db.Timestamp(6)\n  updated_at DateTime?    @default(now()) @db.Timestamp(6)\n  users      users        @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)\n  cart_items cart_items[]\n}\n\nmodel cart_items {\n  cart_item_id Int       @id @default(autoincrement())\n  cart_id      Int\n  food_id      Int\n  quantity     Int\n  created_at   DateTime? @default(now()) @db.Timestamp(6)\n  updated_at   DateTime? @default(now()) @db.Timestamp(6)\n  cart         cart      @relation(fields: [cart_id], references: [cart_id], onDelete: Cascade, onUpdate: NoAction)\n  menu         menu      @relation(fields: [food_id], references: [food_id], onDelete: NoAction, onUpdate: NoAction)\n}\n\nmodel category {\n  category_id          Int       @id @default(autoincrement())\n  category_title       String    @unique @db.VarChar(100)\n  category_description String?\n  created_at           DateTime? @default(now()) @db.Timestamp(6)\n  updated_at           DateTime? @default(now()) @db.Timestamp(6)\n  menu                 menu[]\n}\n\nmodel invoice {\n  invoice_id   Int       @id @default(autoincrement())\n  order_id     Int\n  user_id      Int\n  address_line String    @db.VarChar(255)\n  city         String    @db.VarChar(100)\n  postal_code  String    @db.VarChar(20)\n  country      String    @db.VarChar(100)\n  created_at   DateTime? @default(now()) @db.Timestamp(6)\n  updated_at   DateTime? @default(now()) @db.Timestamp(6)\n  orders       orders    @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: NoAction)\n  users        users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)\n}\n\nmodel menu {\n  food_id      Int            @id @default(autoincrement())\n  category_id  Int\n  food_name    String         @db.VarChar(255)\n  description  String?        @db.Text\n  image        String?        @db.VarChar(255)\n  price        Decimal        @db.Decimal(10, 2)\n  availability Boolean        @default(true)\n  discount     Decimal?       @default(0) @db.Decimal(10, 2)\n  rating       Decimal?       @default(0) @db.Decimal(3, 2)\n  prep_time    Int?           @default(0)\n  calories     Int?           @default(0)\n  ingredients  String[]\n  created_at   DateTime?      @default(now()) @db.Timestamp(6)\n  updated_at   DateTime?      @default(now()) @db.Timestamp(6)\n  cart_items   cart_items[]\n  category     category       @relation(fields: [category_id], references: [category_id], onDelete: NoAction, onUpdate: NoAction)\n  order_items  order_items[]\n  tags_on_menu tags_on_menu[]\n\n  @@index([category_id], map: \"idx_menu_category_id\")\n}\n\nmodel order_items {\n  order_item_id     Int       @id @default(autoincrement())\n  order_id          Int\n  food_id           Int\n  quantity          Int\n  price_at_purchase Decimal   @db.Decimal(10, 2)\n  created_at        DateTime? @default(now()) @db.Timestamp(6)\n  updated_at        DateTime? @default(now()) @db.Timestamp(6)\n  menu              menu      @relation(fields: [food_id], references: [food_id], onDelete: NoAction, onUpdate: NoAction)\n  orders            orders    @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: NoAction)\n}\n\nmodel orders {\n  order_id    Int           @id @default(autoincrement())\n  user_id     Int\n  total_price Decimal       @db.Decimal(10, 2)\n  status      order_status  @default(pending)\n  created_at  DateTime?     @default(now()) @db.Timestamp(6)\n  updated_at  DateTime?     @default(now()) @db.Timestamp(6)\n  invoice     invoice[]\n  order_items order_items[]\n  users       users         @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)\n  payments    payments[]\n\n  @@index([user_id], map: \"idx_orders_user_id\")\n}\n\nmodel payments {\n  payment_id     Int            @id @default(autoincrement())\n  order_id       Int\n  payment_method payment_method\n  payment_status payment_status @default(pending)\n  amount         Decimal        @db.Decimal(10, 2)\n  payment_time   DateTime?      @default(now()) @db.Timestamp(6)\n  orders         orders         @relation(fields: [order_id], references: [order_id], onDelete: Cascade, onUpdate: NoAction)\n}\n\nmodel tags {\n  tag_id       Int            @id @default(autoincrement())\n  tag_name     String         @unique @db.VarChar(100)\n  created_at   DateTime?      @default(now()) @db.Timestamp(6)\n  updated_at   DateTime?      @default(now()) @db.Timestamp(6)\n  tags_on_menu tags_on_menu[]\n}\n\nmodel tags_on_menu {\n  menu_id Int\n  tag_id  Int\n  menu    menu @relation(fields: [menu_id], references: [food_id], onDelete: Cascade, onUpdate: NoAction)\n  tags    tags @relation(fields: [tag_id], references: [tag_id], onDelete: Cascade, onUpdate: NoAction)\n\n  @@id([menu_id, tag_id])\n}\n\nmodel users {\n  user_id    Int       @id @default(autoincrement())\n  name       String    @db.VarChar(100)\n  email      String    @unique @db.VarChar(150)\n  pwd        String    @db.VarChar(255)\n  phone      String?   @db.VarChar(20)\n  photo      String?   @db.VarChar(255)\n  role       String    @default(\"user\") // e.g. \"user\", \"admin\"\n  created_at DateTime? @default(now()) @db.Timestamp(6)\n  updated_at DateTime? @default(now()) @db.Timestamp(6)\n  address    address[]\n  cart       cart[]\n  invoice    invoice[]\n  orders     orders[]\n}\n\nenum order_status {\n  pending\n  paid\n  cancelled\n  delivered\n}\n\nenum payment_method {\n  cash\n  card\n  paypal\n}\n\nenum payment_status {\n  pending\n  completed\n  failed\n}\n",
+  "inlineSchemaHash": "69689512e4ab7da54c10c037ce6eb5b4ac7442125b838276b6285f0af29c34de",
   "copyEngine": true
 }
 
@@ -354,6 +354,10 @@ warnEnvConflicts({
 const PrismaClient = getPrismaClient(config)
 exports.PrismaClient = PrismaClient
 Object.assign(exports, Prisma)
+
+// file annotations for bundling tools to include these files
+path.join(__dirname, "libquery_engine-darwin-arm64.dylib.node");
+path.join(process.cwd(), "src/generated/prisma/libquery_engine-darwin-arm64.dylib.node")
 
 // file annotations for bundling tools to include these files
 path.join(__dirname, "libquery_engine-linux-musl-arm64-openssl-3.0.x.so.node");

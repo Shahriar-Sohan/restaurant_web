@@ -9,6 +9,9 @@ import Image from "next/image";
 import { VideoText } from "./ui/video-text";
 import { SkeletonCard } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { useCart } from "@/lib/cart-context";
+
+
 
 type MenuItem = {
   food_id: number;
@@ -38,6 +41,7 @@ export function FeaturedSection() {
   const [categories, setCategories] = useState<Record<number, string>>({});
   const [hoveredItem, setHoveredItem] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { state, dispatch } = useCart();
 
   useEffect(() => {
     async function fetchData() {
@@ -75,6 +79,20 @@ export function FeaturedSection() {
 
     fetchData();
   }, []);
+
+  function handleAddToCart(item: MenuItem) {
+    dispatch({
+      type: "ADD_ITEM",
+      payload: {
+        id: String(item.food_id),
+        name: item.food_name,
+        price: Number(item.price),
+        image: item.image,
+        description: item.description,
+        category: categories[item.category_id] || "Unknown"
+      }
+    });
+  }
 
   if (error) {
     return (
@@ -247,6 +265,7 @@ export function FeaturedSection() {
                     <Button
                       size="lg"
                       className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 dark:from-blue-500 dark:to-purple-500 dark:hover:from-blue-600 dark:hover:to-purple-600 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-300 hover:scale-105 opacity-0 group-hover:opacity-100 shadow-lg"
+                      onClick={() => handleAddToCart(item)}
                     >
                       Add to Cart
                     </Button>
@@ -261,7 +280,7 @@ export function FeaturedSection() {
         <Link href='/menu' className="text-center mt-16">
           <Button
             size="lg"
-            className="group cursor-pointer bg-gradient-to-r from-slate-900 to-blue-900 hover:from-slate-800 hover:to-blue-800 dark:from-white dark:to-blue-100 dark:hover:from-gray-100 dark:hover:to-blue-200 text-white dark:text-gray-900 font-semibold px-8 py-4 rounded-xl transition-all duration-300 hover:scale-105 shadow-xl"
+            className="group cursor-pointer bg-gradient-to-r from-slate-900 to-blue-900 hover:from-slate-800 hover:to-blue-800 dark:from-white dark:to-blue-100 dark:hover:from-gray-100 dark:hover:to-blue-200 text-white dark:text-gray-900 font-semibold px-8 py-4 mt-8 rounded-xl transition-all duration-300 hover:scale-105 shadow-xl"
           >
             <span className="mr-3 text-lg">Explore Complete Menu</span>
             <ArrowRight className="w-6 h-6 transition-transform duration-300 group-hover:translate-x-1" />

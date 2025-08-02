@@ -97,14 +97,6 @@ export function TestimonialsCarousel() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/30 dark:to-orange-900/30 border border-amber-200/50 dark:border-amber-700/50 rounded-full px-6 py-3 mb-6 shadow-xl backdrop-blur-sm transition-colors duration-500">
-            <div className="w-8 h-8 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
-              <Award className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-amber-800 dark:text-amber-200 font-semibold tracking-wide transition-colors duration-500">
-              EXPERT TESTIMONIALS
-            </span>
-          </div>
 
           <h2 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
             <span className="block text-slate-900 dark:text-white mb-2 transition-colors duration-500">Industry</span>
@@ -229,7 +221,7 @@ export function TestimonialsCarousel() {
           <Button
             variant="outline"
             size="icon"
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110"
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 cursor-pointer"
             onClick={prevTestimonial}
           >
             <ChevronLeft className="w-6 h-6" />
@@ -238,7 +230,7 @@ export function TestimonialsCarousel() {
           <Button
             variant="outline"
             size="icon"
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110"
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border-0 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 cursor-pointer"
             onClick={nextTestimonial}
           >
             <ChevronRight className="w-6 h-6" />
@@ -252,8 +244,8 @@ export function TestimonialsCarousel() {
               key={index}
               className={`transition-all duration-300 ${
                 index === currentTestimonial
-                  ? "w-12 h-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full scale-110 shadow-lg"
-                  : "w-4 h-4 bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-500 rounded-full transition-colors duration-300"
+                  ? "w-12 h-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full scale-110 shadow-lg cursor-pointer"
+                  : "w-4 h-4 bg-slate-300 dark:bg-slate-600 hover:bg-slate-400 dark:hover:bg-slate-500 rounded-full transition-colors duration-300 cursor-pointer"
               }`}
               onClick={() => {
                 setCurrentTestimonial(index)

@@ -72,12 +72,6 @@ export function InteractiveStats() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-3 bg-white/10 dark:bg-white/5 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full px-6 py-3 mb-6 shadow-2xl transition-colors duration-500">
-            <div className="w-8 h-8 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full flex items-center justify-center">
-              <Crown className="w-4 h-4 text-white" />
-            </div>
-            <span className="text-white dark:text-gray-100 font-semibold tracking-wide">PROVEN EXCELLENCE</span>
-          </div>
 
           <h2 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
             <span className="block text-white dark:text-gray-100 mb-2 transition-colors duration-500">
