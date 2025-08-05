@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Filter, Star, Clock, Flame, Leaf, ShoppingCart, Loader2 } from "lucide-react"
+import { useCart } from "@/lib/cart-context"
 
 // Type definitions
 interface Category {
@@ -48,43 +49,59 @@ interface CategoryData {
 }
 
 // Custom hook for cart management
-const useCart = () => {
-  const [cart, setCart] = useState<CartItem[]>([])
+// const useCart = () => {
+//   const [cart, setCart] = useState<CartItem[]>([])
 
-  const addToCart = useCallback((item: MenuItem, categoryTitle: string) => {
-    setCart(prev => {
-      const existingIndex = prev.findIndex(cartItem => cartItem.id === item.food_id)
-      if (existingIndex !== -1) {
-        const updated = [...prev]
-        updated[existingIndex].quantity += 1
-        return updated
-      } else {
-        return [
-          ...prev,
-          {
-            id: item.food_id,
-            name: item.food_name,
-            price: item.price,
-            image: item.image,
-            description: item.description,
-            category: categoryTitle,
-            quantity: 1
-          }
-        ]
+//   const addToCart = useCallback((item: MenuItem, categoryTitle: string) => {
+//     setCart(prev => {
+//       const existingIndex = prev.findIndex(cartItem => cartItem.id === item.food_id)
+//       if (existingIndex !== -1) {
+//         const updated = [...prev]
+//         updated[existingIndex].quantity += 1
+//         return updated
+//       } else {
+//         return [
+//           ...prev,
+//           {
+//             id: item.food_id,
+//             name: item.food_name,
+//             price: item.price,
+//             image: item.image,
+//             description: item.description,
+//             category: categoryTitle,
+//             quantity: 1
+//           }
+//         ]
+//       }
+//     })
+//   }, [])
+
+//   const getCartTotal = useCallback(() => {
+//     return cart.reduce((total, item) => total + (item.price * item.quantity), 0)
+//   }, [cart])
+
+//   const getCartItemCount = useCallback(() => {
+//     return cart.reduce((total, item) => total + item.quantity, 0)
+//   }, [cart])
+
+//   return { cart, addToCart, getCartTotal, getCartItemCount }
+// }
+
+  const {state, dispatch} = useCart();
+
+  function addToCart(item: MenuItem, categoryTitle: string) {
+    dispatch({
+      type: "ADD_ITEM",
+      payload: {
+        id: `${item.food_id}`,
+        name: item.food_name,
+        price: item.price,
+        image: item.image,
+        description: item.description,
+        category: categoryTitle
       }
     })
-  }, [])
-
-  const getCartTotal = useCallback(() => {
-    return cart.reduce((total, item) => total + (item.price * item.quantity), 0)
-  }, [cart])
-
-  const getCartItemCount = useCallback(() => {
-    return cart.reduce((total, item) => total + item.quantity, 0)
-  }, [cart])
-
-  return { cart, addToCart, getCartTotal, getCartItemCount }
-}
+  }
 
 // Custom hook for menu data management
 const useMenuData = () => {
@@ -271,7 +288,6 @@ const MenuItemCard = ({ item, categoryTitle, onAddToCart }: {
 
 // Main component
 export function MenuPage() {
-  const { cart, addToCart, getCartTotal, getCartItemCount } = useCart()
   const {
     menuDataByCategory,
     offsetByCategory,
@@ -414,10 +430,10 @@ export function MenuPage() {
           </p>
 
           {/* Cart indicator */}
-          {getCartItemCount() > 0 && (
+          {state.itemCount > 0 && (
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 text-white">
               <ShoppingCart className="w-5 h-5" />
-              <span>{getCartItemCount()} items • ${getCartTotal().toFixed(2)}</span>
+              <span>{state.itemCount} items • ${state.total.toFixed(2)}</span>
             </div>
           )}
         </div>
