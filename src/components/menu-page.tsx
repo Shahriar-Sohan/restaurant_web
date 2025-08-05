@@ -274,7 +274,7 @@ const MenuItemCard = ({ item, categoryTitle, onAddToCart }: {
           </span>
           <Button
             size="sm"
-            className="opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+            className="cursor-pointer opacity-0 group-hover:opacity-100 transition-all duration-300 hover:scale-105 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
             onClick={() => onAddToCart(item, categoryTitle)}
           >
             <ShoppingCart className="w-4 h-4 mr-2" />
@@ -410,7 +410,7 @@ export function MenuPage() {
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center">
         <div className="text-center">
           <p className="text-xl text-red-600 dark:text-red-400 mb-4">Error: {error}</p>
-          <Button onClick={() => window.location.reload()}>
+          <Button className="cursor-pointer" onClick={() => window.location.reload()}>
             Retry
           </Button>
         </div>
@@ -460,7 +460,7 @@ export function MenuPage() {
                   key={category.id}
                   variant={selectedCategory === category.id ? "default" : "outline"}
                   onClick={() => setSelectedCategory(category.id)}
-                  className="transition-all duration-300 hover:scale-105"
+                  className="cursor-pointer transition-all duration-300 hover:scale-105"
                 >
                   <Filter className="w-4 h-4 mr-2" />
                   {category.name}
