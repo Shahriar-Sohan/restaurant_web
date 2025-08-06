@@ -64,20 +64,6 @@ interface MenuItem {
 }
 
 
-  // useEffect(() => {
-  //   const fetchOrders = async () => {
-  //     try {
-  //       const res = await fetch("/api/orders");
-  //       if (!res.ok) throw new Error("Failed to fetch orders");
-  //       const data = await res.json();
-  //       setOrders(data);
-  //     } catch (error) {
-  //       console.error("Error fetching orders:", error);
-  //     }
-  //   };
-  //   fetchOrders();
-  // }, []);
-
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   useEffect(() => {
     const fetchMenuItems = async () => {

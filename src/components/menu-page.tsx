@@ -48,60 +48,7 @@ interface CategoryData {
   items: MenuItem[]
 }
 
-// Custom hook for cart management
-// const useCart = () => {
-//   const [cart, setCart] = useState<CartItem[]>([])
 
-//   const addToCart = useCallback((item: MenuItem, categoryTitle: string) => {
-//     setCart(prev => {
-//       const existingIndex = prev.findIndex(cartItem => cartItem.id === item.food_id)
-//       if (existingIndex !== -1) {
-//         const updated = [...prev]
-//         updated[existingIndex].quantity += 1
-//         return updated
-//       } else {
-//         return [
-//           ...prev,
-//           {
-//             id: item.food_id,
-//             name: item.food_name,
-//             price: item.price,
-//             image: item.image,
-//             description: item.description,
-//             category: categoryTitle,
-//             quantity: 1
-//           }
-//         ]
-//       }
-//     })
-//   }, [])
-
-//   const getCartTotal = useCallback(() => {
-//     return cart.reduce((total, item) => total + (item.price * item.quantity), 0)
-//   }, [cart])
-
-//   const getCartItemCount = useCallback(() => {
-//     return cart.reduce((total, item) => total + item.quantity, 0)
-//   }, [cart])
-
-//   return { cart, addToCart, getCartTotal, getCartItemCount }
-// }
-
-  const {state, dispatch} = useCart();
-
-  function addToCart(item: MenuItem, categoryTitle: string) {
-    dispatch({
-      type: "ADD_ITEM",
-      payload: {
-        id: `${item.food_id}`,
-        name: item.food_name,
-        price: item.price,
-        image: item.image,
-        description: item.description,
-        category: categoryTitle
-      }
-    })
-  }
 
 // Custom hook for menu data management
 const useMenuData = () => {
@@ -305,6 +252,22 @@ export function MenuPage() {
   const [selectedCategory, setSelectedCategory] = useState("all")
   const containerRefs = useRef<Record<string, HTMLDivElement | null>>({})
   const didInitialFetch = useRef(false)
+
+    const {state, dispatch} = useCart();
+
+  function addToCart(item: MenuItem, categoryTitle: string) {
+    dispatch({
+      type: "ADD_ITEM",
+      payload: {
+        id: `${item.food_id}`,
+        name: item.food_name,
+        price: item.price,
+        image: item.image,
+        description: item.description,
+        category: categoryTitle
+      }
+    })
+  }
 
   // Initialize data
   useEffect(() => {
