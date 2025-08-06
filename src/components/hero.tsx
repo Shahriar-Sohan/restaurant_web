@@ -35,7 +35,7 @@ export function Hero() {
             interval={1000}
             lastWordAnimationSpeed={1.5}
             postArrayDelay={3000}
-            className="flex flex-row items-center justify-center pl-8"
+            className="flex flex-row items-center justify-center md:pl-2"
             textClassName="font-bold"
           />
         </div>

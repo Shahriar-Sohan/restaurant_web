@@ -27,14 +27,10 @@ import {
   Star,
 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
+import Image from "next/image"
 
-
-export function AdminDashboard() {
-  const router = useRouter()
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [activeTab, setActiveTab] = useState("overview")
-  const [orders, setOrders] = useState<Order[]>([]);
-  interface Order {
+ interface Order {
   order_id: number;
   user_id: number;
   total_price: number;
@@ -64,6 +60,14 @@ interface MenuItem {
 }
 
 
+export function AdminDashboard() {
+  const router = useRouter()
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [activeTab, setActiveTab] = useState("overview")
+  const [orders, setOrders] = useState<Order[]>([]);
+ 
+
+
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -79,13 +83,14 @@ interface MenuItem {
     fetchMenuItems();
   }, []);
 
+  const { data: session } = useSession();
   useEffect(() => {
     // Check authentication
-    const authStatus = localStorage.getItem("isAuthenticated")
-    if (authStatus === "true") {
+   
+    if (session.user.role === 'admin') {
       setIsAuthenticated(true)
     } else {
-      router.push("/login")
+      router.push("/")
     }
   }, [router])
 
@@ -390,7 +395,7 @@ interface MenuItem {
                   </CardDescription>
                 </div>
                 <Button
-                  className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
+                  className="cursor-pointer bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600"
                   onClick={() => router.push("/admin/add-item")}
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -406,7 +411,14 @@ interface MenuItem {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
-                          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg"></div>
+                          <div className="relative w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                            <Image
+                              src={item.image}
+                              alt={item.food_name}
+                              fill
+                              style={{ objectFit: "cover" }}
+                            />
+                          </div>
                           <div>
                             <h3 className="font-semibold text-gray-900 dark:text-white">{item.food_name}</h3>
                             <p className="text-sm text-gray-600 dark:text-gray-400">{item.category_id}</p>

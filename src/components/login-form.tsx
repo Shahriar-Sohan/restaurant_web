@@ -75,7 +75,12 @@ export function LoginForm() {
               Customer Login
             </CardTitle>
             <CardDescription className="text-gray-600 dark:text-gray-300 transition-colors duration-300">
-              Sign in to access the Zeus Street admin panel
+              Sign in to access the Zeus Street admin panel. <br />
+              Recruiters can explore using:<br />
+              Admin - admin@example.com / AdminPass123<br />
+              User - john@example.com / UserPass123
+              <br />
+              Once signed in, go to /admin at the end of the URL to access the admin panel.
             </CardDescription>
           </CardHeader>
 
